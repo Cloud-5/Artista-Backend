@@ -6,6 +6,8 @@ const artCategoryRouter = require('./src/routes/art-categories.routes');
 const userRouter = require('./src/routes/artist-request.routes');
 const dashboardRouter = require('./src/routes/dashboard.router');
 const userManagementRouter = require('./src/routes/user-management.routes');
+const artworkRouter = require('./src/routes/artwork-routes');
+const artistNetworkRouter = require('./src/routes/network.router');
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use('/art-categories', artCategoryRouter);
 app.use('/artist-request', userRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
+app.use('/artwork', artworkRouter);
+app.use('/artist-network', artistNetworkRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

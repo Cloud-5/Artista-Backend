@@ -75,3 +75,14 @@ exports.deleteAccount = async (req, res, next) => {
       next(error);
     }
   };
+
+  exports.getArtistDetails = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const artistData = await User.getArtistDetails(id);
+      res.status(200).json(artistData);
+    } catch (error) {
+      console.error("Error getting artist details:", error);
+      next(error);
+    }
+  }

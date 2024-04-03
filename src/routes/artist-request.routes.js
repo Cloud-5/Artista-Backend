@@ -8,3 +8,4 @@ router.put('/approve-artist/:userId', userController.approveArtist);
 
 module.exports = router;
 
+ 
