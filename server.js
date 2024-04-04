@@ -10,6 +10,8 @@ const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
 const categoriesRouter = require('./src/routes/category.routes');
+const preferencesRouter = require('./src/routes/preferences.route');
+
 
 const app = express();
 
@@ -32,6 +34,8 @@ app.use('/artist-page', artistPageRouter);
 app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
+app.use('/preferences', preferencesRouter);
+
 
 
 app.listen(port, () => {
