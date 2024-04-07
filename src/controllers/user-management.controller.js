@@ -51,7 +51,6 @@ exports.getArtistDetails = async (req, res, next) => {
 
 exports.deleteAccount = async (req, res, next) => {
   const userId = req.params.userId;
-
   try {
     await userManagement.deleteUser(userId);
     res.status(200).json({ message: 'Account deleted successfully!' });

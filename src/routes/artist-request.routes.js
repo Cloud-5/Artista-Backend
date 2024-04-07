@@ -10,3 +10,4 @@ router.delete('/:userId', artistController.deleteAccount);
 
 module.exports = router;
 
+ 

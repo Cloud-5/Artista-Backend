@@ -11,6 +11,10 @@ const artCategoryRouter = require('./src/routes/art-categories.routes');
 const userRouter = require('./src/routes/artist-request.routes');
 const dashboardRouter = require('./src/routes/dashboard.router');
 const userManagementRouter = require('./src/routes/user-management.routes');
+
+const artworkRouter = require('./src/routes/artwork-routes');
+const artistNetworkRouter = require('./src/routes/network.router');
+
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
@@ -27,6 +31,7 @@ const feedbackListRouter = require('./src/routes/feedback-list.routes');
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
+
 
 const app = express();
 app.use(cors());
@@ -48,6 +53,8 @@ app.use('/art-categories', artCategoryRouter);
 app.use('/artist-request', userRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
+app.use('/artwork', artworkRouter);
+app.use('/artist-network', artistNetworkRouter);
 
 app.use('/artist-page', artistPageRouter);
 app.use('/for-you', forYouRouter);
