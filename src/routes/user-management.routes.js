@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const userManagementController = require('../controllers/user-management.controller');
 
-router.get('/approved-artists', userManagementController.getApprovedArtists);
-router.get('/registered-customers', userManagementController.getRegisteredCustomers);
-router.delete('/delete-account/:userId', userManagementController.deleteAccount);
-router.put('/ban-account/:userId', userManagementController.banAccount);
+router.get('/', userManagementController.getAllUserData);
+router.get('/:userId', userManagementController.getArtistDetails);
+router.delete('/:userId', userManagementController.deleteAccount);
+router.put('/ban/:userId', userManagementController.banAccount);
 router.put('/remove-ban/:userId', userManagementController.removeBan);
-router.get('/deleted-accounts', userManagementController.getDeletedAccounts);
-router.get('/banned-accounts', userManagementController.getBannedAccounts);
+
 
 module.exports = router;
