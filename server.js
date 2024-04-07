@@ -1,6 +1,11 @@
+require('dotenv').config()
 const express = require('express');
-
+const cors = require('cors');
 const bodyParser = require('body-parser');
+
+
+const userRoutes = require('./src/routes/userRoutes');
+
 
 const artCategoryRouter = require('./src/routes/art-categories.routes');
 const userRouter = require('./src/routes/artist-request.routes');
@@ -14,9 +19,12 @@ const artistPortfolioCreations = require('./src/routes/artist-portfolio-creation
 const purchaseHistoryRouter = require('./src/routes/purchase-history.routes');
 const searchArtRouter = require('./src/routes/search-art.routes');
 const feedbackListRouter = require('./src/routes/feedback-list.routes');
+const artRouter = require ('./src/routes/artRoutes');
+const artistRouter = require('./src/routes/artistRoutes')
+const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
 const app = express();
-
+app.use(cors());
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -28,10 +36,16 @@ app.use((req, res, next) => {
     next();
 });
 
+
+app.use('/user', userRoutes);
+
 app.use('/art-categories', artCategoryRouter);
 app.use('/artist-request', userRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
+app.use('/art',artRouter);
+app.use ('/artist',artistRouter);
+app.use('/artwork-preview', artworkPreviewRouter);
 
 app.use('/customer-profile-gallery', customerProfileGalleryRouter);
 app.use('/customer-gallery-arts', CustomerGalleryArtRouter);

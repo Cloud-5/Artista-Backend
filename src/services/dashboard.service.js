@@ -1,6 +1,6 @@
 const db = require('../utils/database');
 
-module.exports = class Dashboard {
+class Dashboard {
 
     static getNumRegisteredCustomers() {
         return db.execute('SELECT COUNT(*) as numRegisteredCustomers FROM user WHERE role = "customer"');
@@ -63,3 +63,5 @@ module.exports = class Dashboard {
       };
 
 };
+
+module.exports = Dashboard;
