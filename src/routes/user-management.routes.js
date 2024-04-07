@@ -9,9 +9,7 @@ router.delete('/:userId', userManagementController.deleteAccount);
 router.put('/ban/:userId', userManagementController.banAccount);
 router.put('/remove-ban/:userId', userManagementController.removeBan);
 
-
 router.get('/artist-details/:id', userManagementController.getArtistDetails);
 
-router.get('/artist-details/:id', userManagementController.getArtistDetails);
 
 module.exports = router;
