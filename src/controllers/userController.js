@@ -5,9 +5,9 @@ const passwordValidator = require('password-validator');
 const schema = new passwordValidator();
 
 schema
-    .is().min(8)
+    .is().min(10)
     .is().max(100)
-    .has().uppercase(1)
+    .has().uppercase(2)
     .has().lowercase(1)
     .has().digits(1)
     .has().symbols(1);
@@ -19,7 +19,7 @@ exports.signup = async (req, res) => {
 
         const existingUser = await userService.checkExistingEmail(user.email);
 
-        if (existingUser.length > 0) {
+        if (existingUser[0].length > 0) {
             return res.status(400).json({ message: "Email Already Exists." });
         }
 
@@ -41,19 +41,19 @@ exports.login = async (req, res) => {
 
         const user = await userService.loginUser(email);
 
-        if (user.length === 0) {
+        if (user[0][0].length === 0) {
             return res.status(404).json({ message: "Invalid Credentials" })
         }
 
-        if (user[0].isActive === 0) {
+        if (user[0][0].isActive === 0) {
             return res.status(401).json({ message: "Wait for Admin Approval" })
         }
 
-        if (user[0].password_hash !== password) {
+        if (user[0][0].password_hash !== password) {
             return res.status(200).json({ message: "Password Incorrect" })
         }
 
-        const response = { email: user[0].email, role: user[0].role };
+        const response = { email: user[0][0].email, role: user[0][0].role };
         const accessToken = jwt.sign(response, process.env.ACCESS_TOKEN, { expiresIn: '8h' })
 
         return res.status(200).json({ message: "Successful Login", accessToken: accessToken })
@@ -68,11 +68,11 @@ exports.forgotPasword = async (req, res) => {
         const existingUser = await userService.checkExistingEmail(email);
 
 
-        if (existingUser.length === 0) {
+        if (existingUser[0].length === 0) {
             return res.status(404).json({ message: "User not found." });
         }
 
-        await userService.forgotPasword(email, existingUser[0].password_hash);
+        await userService.forgotPasword(email, existingUser[0][0].password_hash);
         return res.status(200).json({ message: "Forgot Password email send" })
 
     } catch (error) {

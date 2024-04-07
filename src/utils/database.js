@@ -28,4 +28,4 @@ const query = (sql, values) => {
   });
 };
 
-module.exports = query;
+module.exports = pool.promise();

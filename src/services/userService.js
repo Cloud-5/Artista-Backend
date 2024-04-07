@@ -1,9 +1,9 @@
-const query = require('../utils/database')
+const db = require('../utils/database')
 const transporter = require('../config/nodemailer')
 
 exports.checkExistingEmail = (email) => {
     const sql = "SELECT * FROM user WHERE email=?";
-    return query(sql, [email]);
+    return db.execute(sql, [email]);
 };
 
 exports.createUser = (user) => {
@@ -14,12 +14,12 @@ exports.createUser = (user) => {
         status = 1
     }
     const sql = "INSERT INTO user(email, password_hash, fName, LName, dob, location, role, isActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    return query(sql, [user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, status])
+    return db.execute(sql, [user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, status])
 };
 
 exports.loginUser = (email) => {
     const sql = "SELECT email, password_hash, role, isActive FROM user WHERE email=?"
-    return query(sql, [email])
+    return db.execute(sql, [email])
 }
 exports.forgotPasword = async (email,password) => {
     await transporter.sendMail({
