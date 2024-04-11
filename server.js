@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./src/routes/userRoutes');
 
 
+
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
@@ -24,6 +25,7 @@ const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
+
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3000;
@@ -39,6 +41,7 @@ app.use((req, res, next) => {
 
 
 app.use('/user', userRoutes);
+
 
 app.use('/artist-page', artistPageRouter);
 app.use('/for-you', forYouRouter);
