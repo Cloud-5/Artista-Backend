@@ -2,8 +2,9 @@ const ArtPreview = require('../services/artwork-preview.service');
 
 exports.artworkPreview = async (req, res, next) => {
     const artId = req.params.artId;
+    const userId = req.query.userId;
     try {
-        const artworkDetails = await ArtPreview.getArtDetails(artId);
+        const artworkDetails = await ArtPreview.getArtDetails(artId, userId);
         const comments = await ArtPreview.getComments(artId);
         const responseData = {
             artworkDetails: artworkDetails[0],
@@ -28,14 +29,114 @@ exports.likeArtwork = async (req, res, next) => {
     }
 }
 
+exports.unlikeArtwork = async (req, res, next) => {
+    const artId = req.params.artId;
+    const userId = req.body.userId;
+    try {
+        await ArtPreview.DeleteLike(artId, userId);
+        res.status(200).json({ message: 'Artwork unliked successfully' });
+    } catch (error) {
+        console.error('Error unliking artwork:', error);
+        next(error);
+    }
+
+}
+
 exports.followArtist = async (req, res, next) => {
     const artistId = req.params.artistId;
-    const customerId = req.body.customerId;
+    const customerId = req.body.userId;
     try {
         await ArtPreview.InsertFollow(customerId, artistId);
         res.status(201).json({ message: 'Artist followed successfully' });
     } catch (error) {
         console.error('Error following artist:', error);
+        next(error);
+    }
+}
+
+exports.unfollowArtist = async (req, res, next) => {
+    const artistId = req.params.artistId;
+    const customerId = req.body.userId;
+    try {
+        await ArtPreview.DeleteFollow(customerId, artistId);
+        res.status(200).json({ message: 'Artist unfollowed successfully' });
+    } catch (error) {
+        console.error('Error unfollowing artist:', error);
+        next(error);
+    }
+}
+
+exports.addToGallery = async (req, res, next) => {
+    const artId = req.params.artId;
+    const userId = req.body.userId;
+    try {
+        await ArtPreview.addToGallery(artId, userId);
+        res.status(201).json({ message: 'Artwork added to gallery successfully' });
+    } catch (error) {
+        console.error('Error adding artwork to gallery:', error);
+        next(error);
+    }
+}
+
+exports.removeFromGallery = async (req, res, next) => {
+    const artId = req.params.artId;
+    const userId = req.body.userId;
+    try {
+        await ArtPreview.removeFromGallery(artId, userId);
+        res.status(200).json({ message: 'Artwork removed from gallery successfully' });
+    } catch (error) {
+        console.error('Error removing artwork from gallery:', error);
+        next(error);
+    }
+
+}
+
+exports.postComment = async(req, res, next) => {
+    const artId = req.params.artId;
+    const userId = req.body.userId; 
+    const content = req.body.content;
+    try {
+        await ArtPreview.insertComment(artId, userId, content);
+        res.status(201).json({ message: 'Comment posted successfully' });
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        next(error);
+    }
+}
+
+exports.replyComment = async (req, res, next) => {
+    const artId = req.params.artId;
+    const userId = req.body.userId; 
+    const content = req.body.content; 
+    const parentId = req.params.parentId; 
+    try {
+        await ArtPreview.insertReply(artId, userId, content, parentId);
+        res.status(201).json({ message: 'Reply posted successfully' });
+    } catch (error) {
+        console.error('Error replying to comment:', error);
+        next(error);
+    }
+}
+
+exports.editComment = async (req, res, next) => {
+    const commentId = req.params.commentId;
+    const content = req.body.content; 
+    try {
+        await ArtPreview.updateComment(commentId, content);
+        res.status(200).json({ message: 'Comment updated successfully' });
+    } catch (error) {
+        console.error('Error editing comment:', error);
+        next(error);
+    }
+}
+
+exports.deleteComment = async (req, res, next) => {
+    const commentId = req.params.commentId;
+    try {
+        await ArtPreview.deleteComment(commentId);
+        res.status(200).json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting comment:', error);
         next(error);
     }
 }

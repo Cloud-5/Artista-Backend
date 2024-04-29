@@ -51,7 +51,7 @@ app.use('/preferences', preferencesRouter);
 
 
 app.use('/art',artRouter);
-app.use ('/artist',artistRouter);
+app.use('/artist',artistRouter);
 app.use('/artwork-preview', artworkPreviewRouter);
 
 app.use('/customer-profile-gallery', customerProfileGalleryRouter);
