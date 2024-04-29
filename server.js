@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 
+
 const userRoutes = require('./src/routes/userRoutes');
 
 
@@ -23,6 +24,7 @@ const searchArtRouter = require('./src/routes/search-art.routes');
 const feedbackListRouter = require('./src/routes/feedback-list.routes');
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
+
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
 
@@ -52,6 +54,7 @@ app.use('/preferences', preferencesRouter);
 
 app.use('/art',artRouter);
 app.use('/artist',artistRouter);
+
 app.use('/artwork-preview', artworkPreviewRouter);
 
 app.use('/customer-profile-gallery', customerProfileGalleryRouter);
