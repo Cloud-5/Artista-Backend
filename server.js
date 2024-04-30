@@ -23,6 +23,8 @@ const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
+const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
+
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3000;
@@ -55,6 +57,8 @@ app.use('/artist-portfolio-creations', artistPortfolioCreations);
 app.use('/purchase-history', purchaseHistoryRouter);
 app.use('/search-art', searchArtRouter);
 app.use('/feedback-list', feedbackListRouter);
+
+app.use('/edit-customer-profile', editCustomerProfileRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
