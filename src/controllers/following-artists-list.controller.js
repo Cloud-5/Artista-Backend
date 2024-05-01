@@ -6,12 +6,14 @@ class FollowingArtistsList {
             const [followedArtists] = await db.execute(`
             SELECT 
             u.user_id,
-            u.username,
+            u.fName,
+            u.LName,
             u.profile_photo_url,
             u.fName AS first_name,
             u.LName AS last_name,
             u.location,
-            u.description
+            u.description,
+            u.profession
         FROM 
             user u
         JOIN 
