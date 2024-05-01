@@ -28,6 +28,17 @@ class PurchaseHistory {
     WHERE 
         cart_item.purchase_id = ?`, [purchase_id]);
     }
+
+    static deletePurchase(purchase_id){
+        return db.execute(`DELETE FROM purchase_history WHERE purchase_id = ?`, [purchase_id]);
+    }
+
+    static deletePurchaseItems(purchase_id){
+        return db.execute(`DELETE FROM cart_item WHERE purchase_id = ?`, [purchase_id]);
+    
+    }
+
+    
 }
 
 
@@ -51,3 +62,20 @@ exports.getPurchaseHistory = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.deletePurchase = async(req, res, next) => {
+    const purchase_id = req.params.purchaseId;
+    try {
+        if (purchase_id) {
+            await PurchaseHistory.deletePurchase(purchase_id);
+            await PurchaseHistory.deletePurchaseItems(purchase_id);
+            res.status(200).json({message: 'Purchase deleted successfully'});
+        } else {
+            throw new Error('Purchase ID is undefined');
+        }
+    } catch (error) {
+        console.error('Error deleting purchase:', error);
+        next(error);
+    }
+}
+
