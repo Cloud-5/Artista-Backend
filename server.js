@@ -13,8 +13,6 @@ const dashboardRouter = require('./src/routes/dashboard.router');
 const userManagementRouter = require('./src/routes/user-management.routes');
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
-const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
-
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3000;
@@ -37,8 +35,6 @@ app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
 app.use('/art',artRouter);
 app.use ('/artist',artistRouter);
-app.use('/artwork-preview', artworkPreviewRouter);
-
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })
