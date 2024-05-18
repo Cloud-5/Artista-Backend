@@ -11,6 +11,7 @@ const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
 const categoriesRouter = require('./src/routes/category.routes');
 const preferencesRouter = require('./src/routes/preferences.route');
+const personalizeRouter = require('./src/routes/personalize.routes');
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
+app.use('/personalize', personalizeRouter);
 
 
 
