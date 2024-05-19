@@ -96,8 +96,10 @@ exports.postComment = async(req, res, next) => {
     const userId = req.body.userId; 
     const content = req.body.content;
     try {
-        await ArtPreview.insertComment(artId, userId, content);
-        res.status(201).json({ message: 'Comment posted successfully' });
+        const insertedComment = await ArtPreview.insertComment(artId, userId, content);
+        const commentId = insertedComment.comment_id;
+        const comment = await ArtPreview.getCommentById(commentId);
+        res.status(201).json({ comment: comment });
     } catch (error) {
         console.error('Error posting comment:', error);
         next(error);
@@ -110,8 +112,10 @@ exports.replyComment = async (req, res, next) => {
     const content = req.body.content; 
     const parentId = req.params.parentId; 
     try {
-        await ArtPreview.insertReply(artId, userId, content, parentId);
-        res.status(201).json({ message: 'Reply posted successfully' });
+        const reply = await ArtPreview.insertReply(artId, userId, content, parentId);
+        const replyId = reply.comment_id;
+        const comment = await ArtPreview.getCommentById(replyId);
+        res.status(201).json({ comment : comment});
     } catch (error) {
         console.error('Error replying to comment:', error);
         next(error);
@@ -122,8 +126,10 @@ exports.editComment = async (req, res, next) => {
     const commentId = req.params.commentId;
     const content = req.body.content; 
     try {
-        await ArtPreview.updateComment(commentId, content);
-        res.status(200).json({ message: 'Comment updated successfully' });
+        const updatedComment = await ArtPreview.updateComment(commentId, content);
+        const updatedcommentId = updatedComment.comment_id;
+        const comment = await ArtPreview.getCommentById(updatedcommentId);
+        res.status(200).json({ comment: comment });
     } catch (error) {
         console.error('Error editing comment:', error);
         next(error);
