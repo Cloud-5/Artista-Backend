@@ -1,6 +1,11 @@
+require('dotenv').config()
 const express = require('express');
-
+const cors = require('cors');
 const bodyParser = require('body-parser');
+
+
+const userRoutes = require('./src/routes/userRoutes');
+
 
 const artCategoryRouter = require('./src/routes/art-categories.routes');
 const userRouter = require('./src/routes/artist-request.routes');
@@ -15,7 +20,7 @@ const personalizeRouter = require('./src/routes/personalize.routes');
 
 
 const app = express();
-
+app.use(cors());
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -27,16 +32,21 @@ app.use((req, res, next) => {
     next();
 });
 
+
+app.use('/user', userRoutes);
+
 app.use('/art-categories', artCategoryRouter);
 app.use('/artist-request', userRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
+
 app.use('/artist-page', artistPageRouter);
 app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
+
 
 
 

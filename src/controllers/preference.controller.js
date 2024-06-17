@@ -2,7 +2,7 @@ const db = require('../utils/database');
 
 class Preference {
     static async showCategories() {
-        return await db.execute('SELECT category_id, name,image_url FROM category');
+        return await db.execute('SELECT category_id, name,banner FROM category');
     }
 
     static async addPreference(user_id, category_ids) {

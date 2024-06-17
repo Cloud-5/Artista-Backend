@@ -6,7 +6,7 @@ class Personalize {
         SELECT 
         c.category_id,
         c.name,
-        c.image_url,
+        c.banner,
         CASE WHEN p.user_id IS NOT NULL THEN 1 ELSE 0 END AS selected
     FROM 
         category c
