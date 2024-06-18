@@ -11,6 +11,7 @@ const artCategoryRouter = require('./src/routes/art-categories.routes');
 const userRouter = require('./src/routes/artist-request.routes');
 const dashboardRouter = require('./src/routes/dashboard.router');
 const userManagementRouter = require('./src/routes/user-management.routes');
+
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
@@ -18,6 +19,10 @@ const categoriesRouter = require('./src/routes/category.routes');
 const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
 
+
+
+const artRouter = require ('./src/routes/artRoutes');
+const artistRouter = require('./src/routes/artistRoutes')
 
 const app = express();
 app.use(cors());
@@ -47,9 +52,8 @@ app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
 
-
-
-
+app.use('/art',artRouter);
+app.use ('/artist',artistRouter);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })
