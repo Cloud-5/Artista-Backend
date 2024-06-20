@@ -15,11 +15,17 @@ const categoriesRouter = require('./src/routes/category.routes');
 const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
 
-
-
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 
+const artistportfolioRouter = require('./src/routes/artist-portfolio.routes');
+const artistportfoliocreationsRouter = require('./src/routes/artist-portfolio-creations.routes');
+const customergalleryartsRouter = require('./src/routes/customer-gallery-arts.routes');
+const customerprofilegalleryRouter = require('./src/routes/customer-profile-gallery.routes');
+const feedbacklistRouter = require('./src/routes/feedback-list.routes');
+const followingartistslistRouter = require('./src/routes/following-artists-list.routes');
+const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
+const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
 
 const app = express();
@@ -46,6 +52,14 @@ app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
 
 
+app.use('/artist-portfolio', artistportfolioRouter);
+app.use('/artist-portfolio-creations', artistportfoliocreationsRouter);
+app.use('/customer-gallery-arts', customergalleryartsRouter);
+app.use('/customer-profile-gallery', customerprofilegalleryRouter);
+app.use('/feedback-list', feedbacklistRouter);
+app.use('/following-artists-list', followingartistslistRouter);
+app.use('/purchase-history', purchasehistoryRouter);
+app.use('/search-art', searchartsRouter);
 app.use('/edit-customer-profile', editCustomerProfileRoutes);
 
 app.use('/art',artRouter);

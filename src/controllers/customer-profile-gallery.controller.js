@@ -36,6 +36,7 @@ class CustomerProfileGallery {
 
 exports.getAllCustomers = async (req, res, next) => {
   const userId = req.params.userId;
+  console.log("userId janani", userId);
   try {
     const customers = await CustomerProfileGallery.fetchAll(userId);
 
