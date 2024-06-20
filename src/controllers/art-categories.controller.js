@@ -1,97 +1,29 @@
-const db = require('../utils/database');
-
-class ArtCategories {
-  constructor(category_id, name, description, margin) {
-    this.category_id = category_id;
-    this.name = name;
-    this.description = description;
-    this.margin = margin;
-  }
-
-  static fetchAll() {
-    return db.execute('SELECT * FROM category');
-  }
-
-  static post(name, description, margin) {
-    return db.execute(
-      'INSERT INTO category (name, description, margin) VALUES (?, ?, ?)',
-      [name, description, margin]
-    )
-    .then(([result]) => {
-      return { categoryId: result.insertId }; // Return the generated category ID
-    });
-  }
-
-  static update(category_id, name, description, margin) {
-    return db.execute(
-      'UPDATE category SET name = ?, description = ?, margin = ? WHERE category_id = ?',
-      [name, description, margin, category_id]
-    )
-    .then(() => {
-      return { categoryId: category_id }; // Return the updated category ID
-    });
-  }
-
-  static delete(category_id) {
-    return db.execute('DELETE FROM category WHERE category_id = ?', [category_id]);
-  }
-}
-
-class ArtCategoriesFormats {
-  constructor(format_id, category_id, format_name) {
-    this.format_id = format_id;
-    this.category_id = category_id;
-    this.format_name = format_name;
-  }
-
-  static fetchAll(category_id) {
-    return db.execute('SELECT * FROM supported_formats WHERE category_id = ?', [category_id]);
-  }
-
-  static post(category_id, format_name) {
-    return db.execute(
-      'INSERT INTO supported_formats (category_id, format_name) VALUES (?, ?)',
-      [category_id, format_name]
-    );
-  }
-
-  static update(format_id, category_id, format_name) {
-    return db.execute(
-      'UPDATE supported_formats SET category_id = ?, format_name = ? WHERE format_id = ?',
-      [category_id, format_name, format_id]
-    );
-  }
-
-  static deleteByCategoryId(category_id) {
-    return db.execute('DELETE FROM supported_formats WHERE category_id = ?', [category_id]);
-  }
-
-  static delete(format_id) {
-    return db.execute('DELETE FROM supported_formats WHERE format_id = ?', [format_id]);
-  }
-}
+const {ArtCategories,ArtCategoriesFormats} = require('../services/art-categories.service');
 
 exports.fetchAll = async (req, res, next) => {
   try {
-    // Fetch all categories
-    const categories = await ArtCategories.fetchAll();
+      // Fetch all categories
+      const categories = await ArtCategories.fetchAll();
 
-    // Map over the categories and fetch associated formats the category
-    const categoriesWithFormats = await Promise.all(
-      categories[0].map(async (category) => {
-        const formats = await ArtCategoriesFormats.fetchAll(category.category_id);
-        return {
-          ...category,
-          formats: formats[0],
-        };
-      })
-    );
+      // Map over the categories and fetch associated formats and artwork count for each category
+      const categoriesWithFormatsAndCount = await Promise.all(
+          categories[0].map(async (category) => {
+              const formats = await ArtCategoriesFormats.fetchSupportedFormats(category.category_id);
+              const count = await ArtCategoriesFormats.fetchArtworkCount(category.category_id);
+              return {
+                  ...category,
+                  totalArtworks: count[0][0].artwork_count, // Access the artwork count correctly
+                  formats: formats[0] // Access the format array
+              };
+          })
+      );
 
-    res.status(200).json(categoriesWithFormats);
+      res.status(200).json(categoriesWithFormatsAndCount);
   } catch (error) {
-    next(error);
+      next(error);
   }
 };
+
 
 exports.createCategory = async (req, res, next) => {
   const { name, description, margin, formats } = req.body;
@@ -131,8 +63,8 @@ exports.updateCategory = async (req, res, next) => {
     await ArtCategories.update(categoryId, name, description, margin);
 
     // Update or insert new formats associated with the category
-    const existingFormats = await ArtCategoriesFormats.fetchAll(categoryId);
-    
+    const existingFormats = await ArtCategoriesFormats.fetchSupportedFormats(categoryId);
+
     // Identify which formats need to be updated and which ones need to be inserted
     const updatePromises = formats.map(async format => {
       if (format.format_id && existingFormats[0].some(existingFormat => existingFormat.format_id === format.format_id)) {
