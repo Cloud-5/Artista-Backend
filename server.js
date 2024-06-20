@@ -24,6 +24,8 @@ const personalizeRouter = require('./src/routes/personalize.routes');
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 
+const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
+
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3000;
@@ -51,6 +53,9 @@ app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
+
+
+app.use('/edit-customer-profile', editCustomerProfileRoutes);
 
 app.use('/art',artRouter);
 app.use ('/artist',artistRouter);

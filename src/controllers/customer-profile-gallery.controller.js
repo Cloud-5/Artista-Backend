@@ -5,6 +5,8 @@ class CustomerProfileGallery {
     return db.execute(
       `SELECT
         u.username AS name,
+        u.fName,
+        u.LName,
         u.location,
         u.registered_at AS joined_date,
         COUNT(DISTINCT g.artwork_id) AS total_gallery_items,
@@ -12,7 +14,8 @@ class CustomerProfileGallery {
         COUNT(DISTINCT ph.purchase_id) AS total_purchases,
         u.description,
         u.profile_photo_url,
-        u.banner_img_url
+        u.banner_img_url,
+        u.email
     FROM
         user u
     LEFT JOIN
