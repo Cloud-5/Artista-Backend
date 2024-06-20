@@ -1,6 +1,7 @@
 
 const db = require('../utils/database');
 
+
 class artistRequest {
   static getRequestedArtists() {
     return db.execute('SELECT profile_photo_url, fName, LName, role, location, registered_at FROM user WHERE role = "artist" AND is_approved = FALSE');
@@ -17,7 +18,34 @@ class artistRequest {
   static rejectArtist(userId) {
     return db.execute('DELETE FROM user WHERE user_id = ?', [userId]);
   }
+
+  static getFollowers(userId) {
+    return db.execute(`SELECT 
+    user.user_id AS follower_user_id,
+    user.username AS follower_username,
+    user.description AS follower_description,
+    user.registered_at AS follower_registered_at,
+    user.profession AS follower_profession,
+    user.location AS follower_location,
+    user.fName AS follower_first_name,
+    user.LName AS follower_last_name,
+    user.profile_photo_url AS follower_profile_photo_url,
+    user.role AS follower_role,
+    user.isActive AS follower_isActive,
+    user.isBanned AS follower_isBanned,
+    user.ban_start_date AS follower_ban_start_date,
+    user.ban_end_date AS follower_ban_end_date,
+    user.is_approved AS follower_is_approved
+FROM 
+    artist_follower
+JOIN 
+    user ON artist_follower.follower_user_id = user.user_id
+WHERE 
+    artist_follower.followed_artist_user_id = ?`,[userId]);
+  }
 }
+
+
 
 exports.getRequestedArtists = async (req, res, next) => {
   try {
@@ -64,5 +92,17 @@ exports.deleteAccount = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getFollowers = async (req, res, next) =>{
+  const userId = req.params.userId;
+  try{
+    const followers = await artistRequest.getFollowers(userId);
+    res.status(200).json(followers[0]);
+  }
+  catch(error){
+    console.error('Error getting followers:', error);
+    next(error);
+  }
+}
 
 

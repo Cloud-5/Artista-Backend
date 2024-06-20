@@ -26,6 +26,7 @@ app.use('/art-categories', artCategoryRouter);
 app.use('/artist-request', userRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
+
 app.use('/artwork', artworkRouter);
 app.use('/artist-network', artistNetworkRouter);
 

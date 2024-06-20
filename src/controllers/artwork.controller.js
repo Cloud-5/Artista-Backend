@@ -1,5 +1,5 @@
-const Artwork = require("../models/artwork.model")
-const { getArtworks } = require("../models/artwork.model")
+const Artwork = require("../services/artwork.service")
+
 
 exports.getAllArtworks = async (req, res, next) => {
     try {

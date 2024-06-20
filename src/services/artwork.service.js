@@ -1,3 +1,5 @@
+const { getFollowersForArtists } = require("../controllers/network.controller");
+const { getFollowers } = require("../models/network.model");
 const db = require("../utils/database");
 
 module.exports = class Artwork {
@@ -13,3 +15,4 @@ module.exports = class Artwork {
     return db.execute(`SELECT COUNT(user_id) as count FROM artwork_like WHERE artwork_id = ${artworkId}`);
   }
 };
+
