@@ -1,8 +1,9 @@
-const db = require('../utils/database');
+const db = require("../utils/database");
 
 class ArtPreview {
-    static getArtDetails(artId, userId) {
-        return db.execute(`SELECT 
+  static getArtDetails(artId, userId) {
+    return db.execute(
+      `SELECT 
         a.title AS artwork_name,
         CONCAT(u.fName, ' ', u.LName) AS artist,
         u.profession AS profession,
@@ -67,68 +68,127 @@ class ArtPreview {
     GROUP BY 
         a.artwork_id;
     
-    `, [userId, userId, userId, artId]);
-    }
+    `,
+      [userId, userId, userId, artId]
+    );
+  }
 
-    static getComments(artId) {
-        return db.execute(
-            'SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?',
-            [artId]
-        );
-    }
+  static getComments(artId) {
+    return db.execute(
+      "SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?",
+      [artId]
+    );
+  }
 
-    static insertComment(artId, userId, content) {
-        return db.execute(
-            'INSERT INTO comment (user_id, artwork_id, content) VALUES (?, ?, ?)',
-            [userId, artId, content]
-        )
-    }
-    static insertReply(artId, userId, content, parentId) {
-        return db.execute(
-            'INSERT INTO comment (user_id, artwork_id, content, parent_comment_id) VALUES (?, ?, ?, ?)',
-            [userId, artId, content, parentId]
-        );
-    }
+  static async insertComment(artId, userId, content) {
+    try {
+      const result = await db.execute(
+        "INSERT INTO comment (user_id, artwork_id, content) VALUES (?, ?, ?)",
+        [userId, artId, content]
+      );
 
-    static updateComment(commentId, content) {
-        return db.execute(
-            'UPDATE comment SET content = ? WHERE comment_id = ?',
-            [content, commentId]
-        );
+      // Get the ID of the inserted comment
+      const insertedCommentId = result[0].insertId;
+
+      // Retrieve the inserted comment from the database
+      const insertedComment = await this.getCommentById(insertedCommentId);
+      return insertedComment;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    static deleteComment(commentId) {
-        return db.execute(
-            'DELETE FROM comment WHERE comment_id = ?',
-            [commentId]
-        );
+  static async getCommentById(commentId) {
+    try {
+      const [commentRows, _] = await db.execute(
+        "SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.comment_id = ?",
+        [commentId]
+      );
+      console.log("fetched comment", commentRows);
+      if (commentRows.length === 0) {
+        throw new Error("Comment not found");
+      }
+      return commentRows[0]; // Return the first comment (there should be only one)
+    } catch (error) {
+      throw error;
     }
+  }
 
-    static InsertLike(artId, userId) {
-        return db.execute('INSERT INTO artwork_like (artwork_id, user_id) VALUES (?, ?)', [artId, userId]);
+  static async insertReply(artId, userId, content, parentId) {
+    try {
+      const result = await db.execute(
+        "INSERT INTO comment (user_id, artwork_id, content, parent_comment_id) VALUES (?, ?, ?, ?)",
+        [userId, artId, content, parentId]
+      );
+        const insertedReplyId = result[0].insertId;
+        const insertedReply = await this.getCommentById(insertedReplyId);
+        return insertedReply;
+    } catch (error) {
+      throw error;
     }
+    return db.execute();
+  }
 
-    static DeleteLike(artId, userId) {
-        return db.execute('DELETE FROM artwork_like WHERE artwork_id = ? AND user_id = ?', [artId, userId]);
+  static async updateComment(commentId, content) {
+    try {
+      const result = await db.execute(
+        "UPDATE comment SET content = ? WHERE comment_id = ?",
+        [content, commentId]
+      );
+      console.log("result", result);
+      const updatedComment = await this.getCommentById(commentId);
+      console.log("updated comment id", updatedComment);
+      return updatedComment;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    static InsertFollow(customerId, artistId) {
-        return db.execute('INSERT INTO artist_follower (follower_user_id, followed_artist_user_id) VALUES (?, ?)', [customerId, artistId]);
-    }
+  static deleteComment(commentId) {
+    return db.execute("DELETE FROM comment WHERE comment_id = ?", [commentId]);
+  }
 
-    static DeleteFollow(customerId, artistId) {
-        return db.execute('DELETE FROM artist_follower WHERE follower_user_id = ? AND followed_artist_user_id = ?', [customerId, artistId]);
-    }
+  static InsertLike(artId, userId) {
+    return db.execute(
+      "INSERT INTO artwork_like (artwork_id, user_id) VALUES (?, ?)",
+      [artId, userId]
+    );
+  }
 
+  static DeleteLike(artId, userId) {
+    return db.execute(
+      "DELETE FROM artwork_like WHERE artwork_id = ? AND user_id = ?",
+      [artId, userId]
+    );
+  }
 
-    static addToGallery(artId, userId) {
-        return db.execute('INSERT INTO gallery (artwork_id, customer_user_id) VALUES (?, ?)', [artId, userId]);
-    }
+  static InsertFollow(customerId, artistId) {
+    return db.execute(
+      "INSERT INTO artist_follower (follower_user_id, followed_artist_user_id) VALUES (?, ?)",
+      [customerId, artistId]
+    );
+  }
 
-    static removeFromGallery(artId, userId) {
-        return db.execute('DELETE FROM gallery WHERE artwork_id = ? AND customer_user_id = ?', [artId, userId]);
-    }
+  static DeleteFollow(customerId, artistId) {
+    return db.execute(
+      "DELETE FROM artist_follower WHERE follower_user_id = ? AND followed_artist_user_id = ?",
+      [customerId, artistId]
+    );
+  }
 
+  static addToGallery(artId, userId) {
+    return db.execute(
+      "INSERT INTO gallery (artwork_id, customer_user_id) VALUES (?, ?)",
+      [artId, userId]
+    );
+  }
+
+  static removeFromGallery(artId, userId) {
+    return db.execute(
+      "DELETE FROM gallery WHERE artwork_id = ? AND customer_user_id = ?",
+      [artId, userId]
+    );
+  }
 }
 
 module.exports = ArtPreview;
