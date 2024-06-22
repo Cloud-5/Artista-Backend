@@ -4,7 +4,8 @@ const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
-const admin = require('../config/firebaseAdmin')
+const admin = require('../config/firebaseAdmin');
+const db = admin.firestore();
 schema
     .is().min(8)
     .is().max(100)
@@ -45,6 +46,14 @@ schema
         // Log user object to ensure all fields are populated
         console.log('User object before saving to database:', user);
     
+        await db.collection('users').doc(firebaseUser.uid).set({
+          email: user.email,
+          displayName: firebaseUser.displayName,
+          firebase_uid: user.firebase_uid,
+          fName: user.fName,
+          lName: user.lName,
+          // Add any other fields you want to save
+        });
         // Save user to database
         await userService.createUser(user);
     
@@ -216,3 +225,17 @@ exports.resetPassword = async (req, res) => {
 };
 
 // forgot password
+
+
+// // Function to check if user has preferences
+// exports.hasPreferences = async (req, res) => {
+//   try {
+//     const { user_id } = req.params;
+//     const [rows] = await db.execute('SELECT COUNT(*) as count FROM preferences WHERE user_id = ?', [user_id]);
+//     const hasPreferences = rows[0].count > 0;
+//     return res.status(200).json({ hasPreferences: hasPreferences });
+//   } catch (error) {
+//     console.error('Error checking preferences:', error);
+//     return res.status(500).json({ error: error.message });
+//   }
+// };

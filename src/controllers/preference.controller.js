@@ -30,3 +30,14 @@ exports.addPreference = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.checkPreferences = async (req, res, next) => {
+    const userId = req.params.userId;
+    try {
+        const [rows] = await db.execute('SELECT COUNT(*) as count FROM preferences WHERE user_id = ?', [userId]);
+        const hasPreferences = rows[0].count > 0;
+        res.status(200).json({ hasPreferences: hasPreferences });
+    } catch (error) {
+        next(error);
+    }
+}
