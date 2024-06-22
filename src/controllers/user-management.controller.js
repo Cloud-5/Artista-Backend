@@ -40,6 +40,8 @@ exports.getAllUserData = async (req, res, next) => {
 exports.getArtistDetails = async (req, res, next) => {
   const userId = req.params.userId;
 
+  console.log("USERID::", userId)
+
   try {
     const artistDetails = await userManagement.getArtistDetails(userId);
     res.status(200).json(artistDetails[0][0]);

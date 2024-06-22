@@ -1,26 +1,33 @@
-
-const db = require('../utils/database');
-
+const db = require("../utils/database");
 
 class artistRequest {
+  static getAllArtistData() {
+    return db.execute('SELECT * FROM user WHERE role = "artist"');
+  }
+
   static getRequestedArtists() {
-    return db.execute('SELECT profile_photo_url, fName, LName, role, location, registered_at FROM user WHERE role = "artist" AND is_approved = FALSE');
+    return db.execute(
+      'SELECT profile_photo_url, fName, LName, role, location, registered_at FROM user WHERE role = "artist" AND is_approved = FALSE'
+    );
   }
 
   static getArtistDetails(userId) {
-    return db.execute('SELECT * FROM user WHERE user_id = ?', [userId]);
+    return db.execute("SELECT * FROM user WHERE user_id = ?", [userId]);
   }
 
   static approveArtist(userId) {
-    return db.execute('UPDATE user SET is_approved = TRUE WHERE user_id = ?', [userId]);
+    return db.execute("UPDATE user SET is_approved = TRUE WHERE user_id = ?", [
+      userId,
+    ]);
   }
 
   static rejectArtist(userId) {
-    return db.execute('DELETE FROM user WHERE user_id = ?', [userId]);
+    return db.execute("DELETE FROM user WHERE user_id = ?", [userId]);
   }
 
   static getFollowers(userId) {
-    return db.execute(`SELECT 
+    return db.execute(
+      `SELECT 
     user.user_id AS follower_user_id,
     user.username AS follower_username,
     user.description AS follower_description,
@@ -41,11 +48,22 @@ FROM
 JOIN 
     user ON artist_follower.follower_user_id = user.user_id
 WHERE 
-    artist_follower.followed_artist_user_id = ?`,[userId]);
+    artist_follower.followed_artist_user_id = ?`,
+      [userId]
+    );
   }
 }
 
+exports.getAllArtistData = async (req, res, next) => {
+  try {
+    const artists = await artistRequest.getAllArtistData();
 
+    res.status(200).json(artists);
+  } catch (error) {
+    console.error("Error fetching artist data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 exports.getRequestedArtists = async (req, res, next) => {
   try {
@@ -66,16 +84,15 @@ exports.getRequestedArtists = async (req, res, next) => {
       rejectedArtists: rejectedArtists[0],
       totalPendingRequests: summaryData.total_pending_requests,
       totalRejectedArtists: summaryData.total_rejected_artists,
-      totalApprovedArtists: summaryData.total_approved_artists
+      totalApprovedArtists: summaryData.total_approved_artists,
     };
 
     res.status(200).json(responseData);
   } catch (error) {
-    console.error('Error fetching artist data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching artist data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 exports.getArtistDetails = async (req, res, next) => {
   const userId = req.params.userId;
@@ -84,7 +101,7 @@ exports.getArtistDetails = async (req, res, next) => {
     const artistDetails = await artistRequest.getArtistDetails(userId);
     res.status(200).json(artistDetails[0][0]);
   } catch (error) {
-    console.error('Error getting artist details:', error);
+    console.error("Error getting artist details:", error);
     next(error);
   }
 };
@@ -94,9 +111,9 @@ exports.approveArtist = async (req, res, next) => {
 
   try {
     await artistRequest.approveArtist(userId);
-    res.status(200).json({ message: 'Artist approved successfully!' });
+    res.status(200).json({ message: "Artist approved successfully!" });
   } catch (error) {
-    console.error('Error approving artist:', error);
+    console.error("Error approving artist:", error);
     next(error);
   }
 };
@@ -106,36 +123,32 @@ exports.rejectArtist = async (req, res, next) => {
 
   try {
     await artistRequest.rejectArtist(userId);
-    res.status(200).json({ message: 'Artist rejected successfully!' });
+    res.status(200).json({ message: "Artist rejected successfully!" });
   } catch (error) {
-    console.error('Error rejecting artist:', error);
+    console.error("Error rejecting artist:", error);
     next(error);
   }
-
-}
+};
 
 exports.deleteAccount = async (req, res, next) => {
   const userId = req.params.userId;
 
   try {
     await artistRequest.deleteArtist(userId);
-    res.status(200).json({ message: 'Account deleted successfully!' });
+    res.status(200).json({ message: "Account deleted successfully!" });
   } catch (error) {
-    console.error('Error deleting account:', error);
+    console.error("Error deleting account:", error);
     next(error);
   }
 };
 
-exports.getFollowers = async (req, res, next) =>{
+exports.getFollowers = async (req, res, next) => {
   const userId = req.params.userId;
-  try{
+  try {
     const followers = await artistRequest.getFollowers(userId);
     res.status(200).json(followers[0]);
-  }
-  catch(error){
-    console.error('Error getting followers:', error);
+  } catch (error) {
+    console.error("Error getting followers:", error);
     next(error);
   }
-}
-
-
+};

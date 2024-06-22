@@ -21,3 +21,15 @@ exports.getFeedbacksForArtist = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.deleteFollower = async (req, res, next) => {
+    const { followerId, artistId } = req.body;
+    try {
+        const del = await ArtistNetwork.deleteFollower(followerId, artistId);
+        res.status(200).json({ message: "Follower deleted successfully!" });
+    } catch (error) {
+        console.error("Error deleting follower:", error);
+        next(error);
+    }
+}
+
