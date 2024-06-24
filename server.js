@@ -17,6 +17,7 @@ const cartRouter = require('./src/routes/cart.routes');
 const categoriesRouter = require('./src/routes/category.routes');
 const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
+const cart2Router = require('./src/routes/cart2.routes');
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(cors());
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -46,6 +48,7 @@ app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
+app.use('/cart2', cart2Router);
 
 
 
