@@ -94,11 +94,12 @@ exports.forgotPasword = async (email,link) => {
 
 exports.sendForgotPasswordEmail = async (senderAddress, link) => {
     let error = false;
-    console.log("LINK",link);
+    //console.log("LINK",link);
 
     try {
-      await transporter.sendMail({
-        from:  process.env.SMTP_USER,
+      
+      transporter.sendMail({
+        from: process.env.SMTP_USER,
         to: senderAddress,
         subject: "New Password",
         html: `Please reset your password by clicking <a href="${link}">here</a>.<br>This email is valid for two days.`,

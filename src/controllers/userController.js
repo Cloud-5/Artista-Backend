@@ -103,9 +103,9 @@ exports.forgotPasword = async (req, res) => {
           const link = "http://" + req.hostname + ":4200/new?token=" + token;
           // console.log(link)
           
-          const sendMail = await userService.sendForgotPasswordEmail(existingUser[0][0].email,link);
+          //const sendMail = await userService.sendForgotPasswordEmail(existingUser[0][0].email,link);
   
-          await userService.forgotPasword(email, existingUser[0][0].password_hash);
+          await userService.sendForgotPasswordEmail(email,link, existingUser[0][0].password_hash);
           return res.status(200).json({ message: "Forgot Password email send" })
         }
         catch (error) {
@@ -215,11 +215,13 @@ exports.forgotPasword = async (req, res) => {
 //   }
 // };
 
+
+
 exports.resetPassword = async (req, res) => {
   const { newPassword, confirmNewPassword } = req.body;
-  const { userEmail } = req.params; // Assuming the email is passed as a parameter in the URL
+  const { userEmail } = req.params;
 
-  if (!newPassword || !confirmNewPassword || !userEmail) {
+  if (!newPassword || !confirmNewPassword) {
     return res.status(400).json({ success: false, msg: "Please fill in all the fields" });
   }
 
@@ -251,10 +253,11 @@ exports.resetPassword = async (req, res) => {
       return res.status(500).json({ success: false, msg: "Something went wrong" });
     }
   } catch (error) {
-    console.error(error);
+    console.error('Error updating password:', error);
     return res.status(500).json({ success: false, msg: "Server error" });
   }
 };
+
 exports.changePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const email = res.locals.email;
