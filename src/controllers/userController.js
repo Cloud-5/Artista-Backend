@@ -4,8 +4,7 @@ const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
-const admin = require('../config/firebaseAdmin');
-const db = admin.firestore();
+const admin = require('../config/firebaseAdmin')
 schema
     .is().min(8)
     .is().max(100)
@@ -46,14 +45,6 @@ schema
         // Log user object to ensure all fields are populated
         console.log('User object before saving to database:', user);
     
-        await db.collection('users').doc(firebaseUser.uid).set({
-          email: user.email,
-          displayName: firebaseUser.displayName,
-          firebase_uid: user.firebase_uid,
-          fName: user.fName,
-          lName: user.lName,
-          // Add any other fields you want to save
-        });
         // Save user to database
         await userService.createUser(user);
     
@@ -86,7 +77,7 @@ schema
         const response = { email: email, role: user[0][0].role, uid: uid };
         const accessToken = jwt.sign(response, process.env.ACCESS_TOKEN, { expiresIn: '8h' });
     
-        return res.status(200).json({ message: "Successful Login", accessToken: accessToken });
+        return res.status(200).json({ message: "Successful Login", accessToken: accessToken , data: user[0][0] });
       } catch (error) {
         console.error('Error fetching user:', error);
         return res.status(500).json({ error: error.message });
@@ -184,21 +175,52 @@ exports.forgotPasword = async (req, res) => {
 // }
 //   };
 
+// exports.resetPassword = async (req, res) => {
+//   const { email, newPassword, confirmNewPassword } = req.body;
+
+//   if (!newPassword || !confirmNewPassword || !email) {
+//     return res.status(400).json({ success: false, msg: "Please fill in all the fields" });
+//   }
+
+//   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+//   if (!emailRegex.test(email)) {
+//     return res.status(400).json({ success: false, msg: "Please enter a valid email" });
+//   }
+
+//   const existingUser = await userService.checkEmail(email);
+//   if (!existingUser) {
+//     return res.status(400).json({ success: false, msg: "User not found" });
+//   }
+
+//   if (newPassword !== confirmNewPassword) {
+//     return res.status(400).json({ success: false, msg: "Passwords do not match" });
+//   }
+
+//   if (!schema.validate(newPassword)) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: "Password must at least contain 8 characters, one uppercase letter, one lowercase letter, one number, and one special character!"
+//     });
+//   }
+
+//   const salt = await bcrypt.genSalt(12);
+//   const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+//   const updatedData = await userService.updatePassword(hashedPassword, email);
+
+//   if (updatedData) {
+//     return res.status(200).json({ success: true, msg: "Password updated successfully" });
+//   } else {
+//     return res.status(500).json({ success: false, msg: "Something went wrong" });
+//   }
+// };
+
 exports.resetPassword = async (req, res) => {
-  const { email, newPassword, confirmNewPassword } = req.body;
+  const { newPassword, confirmNewPassword } = req.body;
+  const { userEmail } = req.params; // Assuming the email is passed as a parameter in the URL
 
-  if (!newPassword || !confirmNewPassword || !email) {
+  if (!newPassword || !confirmNewPassword || !userEmail) {
     return res.status(400).json({ success: false, msg: "Please fill in all the fields" });
-  }
-
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ success: false, msg: "Please enter a valid email" });
-  }
-
-  const existingUser = await userService.checkEmail(email);
-  if (!existingUser) {
-    return res.status(400).json({ success: false, msg: "User not found" });
   }
 
   if (newPassword !== confirmNewPassword) {
@@ -212,30 +234,53 @@ exports.resetPassword = async (req, res) => {
     });
   }
 
-  const salt = await bcrypt.genSalt(12);
-  const hashedPassword = await bcrypt.hash(newPassword, salt);
+  try {
+    const existingUser = await userService.checkEmail(userEmail);
+    if (!existingUser) {
+      return res.status(400).json({ success: false, msg: "User not found" });
+    }
 
-  const updatedData = await userService.updatePassword(hashedPassword, email);
+    const salt = await bcrypt.genSalt(12);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
-  if (updatedData) {
-    return res.status(200).json({ success: true, msg: "Password updated successfully" });
-  } else {
-    return res.status(500).json({ success: false, msg: "Something went wrong" });
+    const updatedData = await userService.updatePassword(hashedNewPassword, userEmail);
+
+    if (updatedData.affectedRows > 0) {
+      return res.status(200).json({ success: true, msg: "Password updated successfully" });
+    } else {
+      return res.status(500).json({ success: false, msg: "Something went wrong" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, msg: "Server error" });
   }
 };
+exports.changePassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const email = res.locals.email;
 
-// forgot password
+  try {
+      const user = await userService.getUserByEmail(email);
+      if (user.length === 0) {
+          return res.status(400).json({ message: "User not found" });
+      }
 
+      const validPassword = await bcrypt.compare(oldPassword, user[0].password_hash);
+      if (!validPassword) {
+          return res.status(400).json({ message: "Invalid old password" });
+      }
 
-// // Function to check if user has preferences
-// exports.hasPreferences = async (req, res) => {
-//   try {
-//     const { user_id } = req.params;
-//     const [rows] = await db.execute('SELECT COUNT(*) as count FROM preferences WHERE user_id = ?', [user_id]);
-//     const hasPreferences = rows[0].count > 0;
-//     return res.status(200).json({ hasPreferences: hasPreferences });
-//   } catch (error) {
-//     console.error('Error checking preferences:', error);
-//     return res.status(500).json({ error: error.message });
-//   }
-// };
+      if (!schema.validate(newPassword)) {
+          return res.status(400).json({ message: "Password must at least contain 8 characters, uppercase letters, lowercase letters, digits, and special characters!" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+      await userService.updateUserPassword(hashedNewPassword, email);
+      return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+      console.error('Error changing password:', error);
+      return res.status(500).json({ message: "Internal server error" });
+  }
+};

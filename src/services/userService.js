@@ -5,12 +5,33 @@ exports.checkExistingEmail = (email) => {
     const sql = "SELECT * FROM user WHERE email=?";
     return db.execute(sql, [email]);
 };
+// exports.checkEmail = async (email) => {
+//   return await User.findOne({ email });
+// };
 exports.checkEmail = async (email) => {
-  return await User.findOne({ email });
+  try {
+    const [rows, fields] = await db.execute('SELECT * FROM user WHERE email = ?', [email]);
+    return rows[0]; // Assuming email is unique and you want the first match
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 };
 
+// exports.updatePassword = async (hashedPassword, email) => {
+//   return await User.updateOne({ email }, { $set: { password: hashedPassword } });
+// };
 exports.updatePassword = async (hashedPassword, email) => {
-  return await User.updateOne({ email }, { $set: { password: hashedPassword } });
+  if (!hashedPassword || !email) {
+    throw new Error("Hashed password and email are required");
+  }
+  try {
+    const [result] = await db.execute('UPDATE user SET password_hash = ? WHERE email = ?', [hashedPassword, email]);
+    return result;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 };
 exports.createUser = async (user) => {
   console.log("Create user hit!!");
@@ -52,7 +73,7 @@ exports.updateUserPassword = (password, email) => {
 }
 
 exports.loginUser = (email) => {
-    const sql = "SELECT email, password_hash, role, isActive FROM user WHERE email=?"
+    const sql = "SELECT user_id, email, password_hash, role, isActive FROM user WHERE email=?"
     return db.execute(sql, [email])
 }
 exports.forgotPasword = async (email,link) => {
@@ -88,3 +109,7 @@ exports.sendForgotPasswordEmail = async (senderAddress, link) => {
   
     return error;
   };
+  exports.getUserByEmail = (email) => {
+    const sql = "SELECT * FROM user WHERE email=?";
+    return db.execute(sql, [email]);
+};
