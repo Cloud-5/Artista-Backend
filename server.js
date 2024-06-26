@@ -31,6 +31,8 @@ const feedbackListRouter = require('./src/routes/feedback-list.routes');
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
+const artistFollowersRouter = require('./src/routes/artist-followers');
+
 
 
 const app = express();
@@ -58,6 +60,7 @@ app.use('/artwork', artworkRouter);
 app.use('/artist-network', artistNetworkRouter);
 
 app.use('/artist-page', artistPageRouter);
+
 app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
@@ -76,6 +79,10 @@ app.use('/artist-portfolio-creations', artistPortfolioCreations);
 app.use('/purchase-history', purchaseHistoryRouter);
 app.use('/search-art', searchArtRouter);
 app.use('/feedback-list', feedbackListRouter);
+
+app.use('/artist-followers',artistFollowersRouter);
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
