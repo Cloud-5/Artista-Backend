@@ -1,5 +1,3 @@
-const { getFollowersForArtists } = require("../controllers/network.controller");
-const { getFollowers } = require("../models/network.model");
 const db = require("../utils/database");
 
 module.exports = class Artwork {
@@ -8,11 +6,11 @@ module.exports = class Artwork {
   }
 
   static async getArtworkByArtistId(artistId) {
-    return db.execute(`SELECT * FROM artwork WHERE artist_id = ${artistId}`);
+    return db.execute(`SELECT * FROM artwork WHERE artist_id = ?`,[artistId]);
   }
 
   static async getLikesForArtwork(artworkId) {
-    return db.execute(`SELECT COUNT(user_id) as count FROM artwork_like WHERE artwork_id = ${artworkId}`);
+    return db.execute(`SELECT COUNT(user_id) as count FROM artwork_like WHERE artwork_id = ?`,[artworkId]);
   }
 };
 
