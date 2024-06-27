@@ -13,6 +13,9 @@ schema
     .has().digits(1)
     .has().symbols(1);
 
+
+
+    
     exports.signup = async (req, res) => {
       console.log(req.body);
       try {
@@ -56,6 +59,8 @@ schema
     };
     
 
+
+
     exports.login = async (req, res) => {
       try {
         const { email, password } = req.body;
@@ -83,6 +88,9 @@ schema
         return res.status(500).json({ error: error.message });
       }
     };
+
+
+
     exports.forgotPasword = async (req, res) => {
       try {
           const { email } = req.body;
@@ -118,6 +126,7 @@ schema
       }
   };
   
+
 
 
 
@@ -162,6 +171,10 @@ exports.resetPassword = async (req, res) => {
     return res.status(500).json({ success: false, msg: "Server error" });
   }
 };
+
+
+
+
 exports.changePassword = async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
 
