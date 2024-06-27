@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
 const admin = require('../config/firebaseAdmin')
+const { connect } = require('../utils/database');
 schema
     .is().min(8)
     .is().max(100)
@@ -100,12 +101,14 @@ exports.forgotPasword = async (req, res) => {
           const token = tokengenerator({ email: existingUser[0][0].email });
           // console.log(token)
         
-          const link = "http://" + req.hostname + ":4200/new?token=" + token;
+          //const link = "http://" + req.hostname + ":4200/new?token=" + token;
           // console.log(link)
           
-          //const sendMail = await userService.sendForgotPasswordEmail(existingUser[0][0].email,link);
+          const link = `http://${req.hostname}:4200/new?email=${encodeURIComponent(email)}&token=${token}`;
+
+          // const sendMail = await userService.sendForgotPasswordEmail(existingUser[0][0].email,link);
   
-          await userService.sendForgotPasswordEmail(email,link, existingUser[0][0].password_hash);
+         await userService.sendForgotPasswordEmail(email,link, existingUser[0][0].password_hash);
           return res.status(200).json({ message: "Forgot Password email send" })
         }
         catch (error) {
@@ -117,109 +120,11 @@ exports.forgotPasword = async (req, res) => {
     }
 };
 
-// exports.resetPassword = async (req, res) => {
-//     const { email, newPassword, confirmNewPassword } = req.body;
-  
-//     if (!newPassword || !confirmNewPassword || !email) {
-//       return res
-//         .status(401)
-//         .json({ success: false, msg: "Please fill in all the fields" });
-//     }
-  
-//     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-//     if (!emailRegex.test(email)) {
-//       return res
-//         .status(400)
-//         .json({ success: false, msg: "Please enter a valid email" });
-//     }
-//     const existingUser = await userService.checkExistingEmail(email);
-    
-//     if (!existingUser) {
-//       return res.status(400).json({ success: false, msg: "User not found" });
-//     }
-  
-//     if (
-//       newPassword.length < 8 &&
-//       ![A - Z].test(newPassword) &&
-//       ![a - z].test(newPassword) &&
-//       ![0 - 9].test(newPassword) &&
-//       !/[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]/.test(newPassword)
-//     ) {
-//       return res
-//         .status(400)
-//         .json({
-//           success: false,
-//           msg: "Please enter a valid password with at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character",
-//         });
-//     }
-  
-//     if (newPassword !== confirmNewPassword) {
-//       return res
-//         .status(400)
-//         .json({ success: false, msg: "Passwords do not match" });
-//     }
-  
-//     const salt = await bcrypt.genSalt(12);
-//     const hashedPassword = await bcrypt.hash(newPassword, salt);
-  
-//     const updatedData = await userService.updateUserPassword(hashedPassword, email);
-  
-//     if (updatedData) {
-//       return res
-//         .status(200)
-//         .json({ success: true, msg: "Password updated successfully" });
-//     } else {
-//       return res
-//         .status(500)
-//         .json({ success: false, msg: "Something went wrong"});
-// }
-//   };
-
-// exports.resetPassword = async (req, res) => {
-//   const { email, newPassword, confirmNewPassword } = req.body;
-
-//   if (!newPassword || !confirmNewPassword || !email) {
-//     return res.status(400).json({ success: false, msg: "Please fill in all the fields" });
-//   }
-
-//   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-//   if (!emailRegex.test(email)) {
-//     return res.status(400).json({ success: false, msg: "Please enter a valid email" });
-//   }
-
-//   const existingUser = await userService.checkEmail(email);
-//   if (!existingUser) {
-//     return res.status(400).json({ success: false, msg: "User not found" });
-//   }
-
-//   if (newPassword !== confirmNewPassword) {
-//     return res.status(400).json({ success: false, msg: "Passwords do not match" });
-//   }
-
-//   if (!schema.validate(newPassword)) {
-//     return res.status(400).json({
-//       success: false,
-//       msg: "Password must at least contain 8 characters, one uppercase letter, one lowercase letter, one number, and one special character!"
-//     });
-//   }
-
-//   const salt = await bcrypt.genSalt(12);
-//   const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-//   const updatedData = await userService.updatePassword(hashedPassword, email);
-
-//   if (updatedData) {
-//     return res.status(200).json({ success: true, msg: "Password updated successfully" });
-//   } else {
-//     return res.status(500).json({ success: false, msg: "Something went wrong" });
-//   }
-// };
-
 
 
 exports.resetPassword = async (req, res) => {
   const { newPassword, confirmNewPassword } = req.body;
-  const { userEmail } = req.params;
+  const userEmail = req.body.email;
 
   if (!newPassword || !confirmNewPassword) {
     return res.status(400).json({ success: false, msg: "Please fill in all the fields" });
@@ -259,8 +164,8 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.changePassword = async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
-  const email = res.locals.email;
+  const { email,oldPassword, newPassword } = req.body;
+ 
 
   try {
       const user = await userService.getUserByEmail(email);
@@ -268,7 +173,7 @@ exports.changePassword = async (req, res) => {
           return res.status(400).json({ message: "User not found" });
       }
 
-      const validPassword = await bcrypt.compare(oldPassword, user[0].password_hash);
+      const validPassword = await bcrypt.compare(oldPassword, user[0][0].password_hash);
       if (!validPassword) {
           return res.status(400).json({ message: "Invalid old password" });
       }

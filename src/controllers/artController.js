@@ -43,7 +43,7 @@ class Art {
       INNER JOIN 
         user u ON a.artist_id = u.user_id
       LEFT JOIN 
-        artwork_like al ON a.artwork_id = al.artwork_id AND ${dateFilter}
+        artwork_like al ON a.artwork_id = al.artwork_id AND 7
       GROUP BY 
         a.artwork_id
       ORDER BY 
