@@ -32,6 +32,7 @@ const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 const artistFollowersRouter = require('./src/routes/artist-followers');
+const artistFeedbackRouter = require('./src/routes/artist-feedback.router');
 
 
 
@@ -58,6 +59,8 @@ app.use('/user-management', userManagementRouter);
 
 app.use('/artwork', artworkRouter);
 app.use('/artist-network', artistNetworkRouter);
+app.use('/artist-feedback', artistFeedbackRouter);
+
 
 app.use('/artist-page', artistPageRouter);
 
