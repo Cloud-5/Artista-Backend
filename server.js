@@ -17,9 +17,6 @@ const personalizeRouter = require('./src/routes/personalize.routes');
 
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
-const artistFollowersRouter = require('./src/routes/artist-followers');
-
-
 
 const artistportfolioRouter = require('./src/routes/artist-portfolio.routes');
 const artistportfoliocreationsRouter = require('./src/routes/artist-portfolio-creations.routes');
@@ -30,9 +27,6 @@ const followingartistslistRouter = require('./src/routes/following-artists-list.
 const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
 const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
-
-const artworkRouter = require('./src/routes/artwork-routes');
-const artistNetworkRouter = require('./src/routes/network.router');
 
 const app = express();
 
@@ -50,11 +44,7 @@ app.use((req, res, next) => {
 
 app.use('/user', userRoutes);
 
-app.use('/artwork', artworkRouter);
-app.use('/artist-network', artistNetworkRouter);
-
 app.use('/artist-page', artistPageRouter);
-
 app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
@@ -76,10 +66,6 @@ app.use('/art',artRouter);
 app.use ('/artist',artistRouter);
 
 app.use('/artwork-preview', artworkPreviewRouter);
-
-app.use('/artist-followers',artistFollowersRouter);
-
-
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
