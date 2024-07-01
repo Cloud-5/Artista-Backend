@@ -73,9 +73,46 @@ class ArtPreview {
     );
   }
 
+  static getBestArtworks(artistId) {
+    return db.execute(
+      `SELECT 
+    a.artwork_id,
+    a.artist_id,
+    a.title,
+    a.price,
+    a.thumbnail_url,
+    a.description,
+    a.published_date,
+    a.category_id,
+    COALESCE(like_count, 0) AS like_count,
+    COALESCE(comment_count, 0) AS comment_count,
+    (COALESCE(like_count, 0) * 1) + (COALESCE(comment_count, 0) * 2) AS score
+    FROM 
+      artwork a
+    LEFT JOIN 
+      (SELECT artwork_id, COUNT(*) AS like_count 
+      FROM artwork_like 
+      GROUP BY artwork_id) al ON a.artwork_id = al.artwork_id
+    LEFT JOIN 
+      (SELECT artwork_id, COUNT(*) AS comment_count 
+      FROM comment 
+      GROUP BY artwork_id) c ON a.artwork_id = c.artwork_id
+    WHERE 
+      a.artist_id = ?
+    ORDER BY 
+      score DESC
+    LIMIT 5;`,
+      [artistId]
+    );
+  }
+
+  static getRelatedArtworks(artId){
+    return db.execute("CALL GetRelatedArtworks(?);",[artId]);
+  }
+
   static getComments(artId) {
     return db.execute(
-      "SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?",
+      "SELECT c.*, u.username,u.profile_photo_url FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?",
       [artId]
     );
   }
@@ -120,9 +157,9 @@ class ArtPreview {
         "INSERT INTO comment (user_id, artwork_id, content, parent_comment_id) VALUES (?, ?, ?, ?)",
         [userId, artId, content, parentId]
       );
-        const insertedReplyId = result[0].insertId;
-        const insertedReply = await this.getCommentById(insertedReplyId);
-        return insertedReply;
+      const insertedReplyId = result[0].insertId;
+      const insertedReply = await this.getCommentById(insertedReplyId);
+      return insertedReply;
     } catch (error) {
       throw error;
     }

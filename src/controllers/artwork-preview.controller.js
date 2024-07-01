@@ -6,10 +6,16 @@ exports.artworkPreview = async (req, res, next) => {
     try {
         const artworkDetails = await ArtPreview.getArtDetails(artId, userId);
         const comments = await ArtPreview.getComments(artId);
+        const artistId = artworkDetails[0][0].artist_id;
+        const bestArtworks = await ArtPreview.getBestArtworks(artistId);
+        const relatedArtworks = await ArtPreview.getRelatedArtworks(artId);
         const responseData = {
             artworkDetails: artworkDetails[0],
-            comments: comments[0]
+            comments: comments[0],
+            bestArtworks: bestArtworks[0],
+            relatedArtworks: relatedArtworks[0]
         };
+        console.log('related', relatedArtworks[0]);
         res.status(200).json(responseData);
     } catch (error) {
         console.error('Error getting artwork details or comments:', error);
