@@ -5,6 +5,7 @@ class FeedbackList {
         try {
             const feedbackList = await db.execute(`
             SELECT 
+                u.profile_photo_url,
                 u.username AS customer_name,
                 f.content AS feedback_content,
                 f.created_at AS timestamp
