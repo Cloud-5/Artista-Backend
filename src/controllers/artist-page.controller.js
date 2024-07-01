@@ -1,29 +1,52 @@
+const db = require('../utils/database');
 
+class Artistpage {
+    static fetchAll({ page, limit, searchKeyword, sortBy, location, profession }) {
+        const offset = page * limit;
+        let query = `
+            SELECT user.*, 
+                   (SELECT COUNT(artwork_id) FROM artwork WHERE artist_id = user.user_id) AS total_creations, 
+                   (SELECT AVG(rating_value) FROM artist_rating WHERE rated_user_id = user.user_id) AS rating,
+                   (SELECT COUNT(follower_user_id) FROM artist_follower WHERE followed_artist_user_id = user.user_id) AS follower_count
+            FROM user 
+            WHERE role = "artist"`;
 
-const Artists = require('../models/artist-page.model');
-const Creations = require('../models/artist-creations.model');
-const Rating = require('../models/artist-rating.model');
+        if (searchKeyword) {
+            query += ` AND (username LIKE '%${searchKeyword}%' OR fName LIKE '%${searchKeyword}%' OR LName LIKE '%${searchKeyword}%'  OR profession LIKE '%${searchKeyword}%' OR location LIKE '%${searchKeyword}%')`;
+        }
 
+        if (location) {
+            query += ` AND location = '${location}'`;
+        }
 
+        if (profession) {
+            query += ` AND profession = '${profession}'`;
+        }
+
+        if (sortBy) {
+            query += ` ORDER BY ${sortBy} DESC`;
+        }
+
+        query += ` LIMIT ${limit} OFFSET ${offset}`;
+
+        console.log('Executing query:', query); // Log the final query
+
+        return db.execute(query);
+    }
+}
 
 exports.fetchAll = async (req, res, next) => {
+    const { page = 0, limit = 10, searchKeyword = '', sortBy = '', location = '', profession = '' } = req.query;
+
+    console.log('Received query params:', { page, limit, searchKeyword, sortBy, location, profession }); // Log the received parameters
+
     try {
-        const artists = await Artists.fetchAll();
+        const [artists] = await Artistpage.fetchAll({ page, limit, searchKeyword, sortBy, location, profession });
 
-        const artistWithRatingsCreations = await Promise.all(
-            artists[0].map(async (artist) => {
-                const rating = await Rating.fetchRating(artist.user_id);
-                const creations = await Creations.fetchTotalCreations(artist.user_id);
+        // Log artist data for debugging
+        console.log('Artists data:', artists);
 
-                return {
-                    ...artist,
-                    rating: rating[0], // Assuming rating_value is in the first row of the result
-                    total_creations: creations[0] // Assuming COUNT(artwork_id) is in the first row of the result
-                };
-            })
-        );
-
-        res.status(200).json(artistWithRatingsCreations);
+        res.status(200).json(artists);
     } catch (error) {
         next(error);
     }

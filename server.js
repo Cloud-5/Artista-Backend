@@ -7,13 +7,14 @@ const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 //gihan
 const userRoutes = require('./src/routes/userRoutes');
 
-
+//Kaumi
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
 const categoriesRouter = require('./src/routes/category.routes');
 const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
+const cart2Router = require('./src/routes/cart2.routes');
 
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
@@ -50,6 +51,7 @@ app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
+app.use('/cart2', cart2Router);
 
 
 app.use('/artist-portfolio', artistportfolioRouter);
