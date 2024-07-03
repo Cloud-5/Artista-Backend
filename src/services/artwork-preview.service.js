@@ -101,7 +101,7 @@ class ArtPreview {
       a.artist_id = ?
     ORDER BY 
       score DESC
-    LIMIT 5;`,
+    LIMIT 10;`,
       [artistId]
     );
   }
