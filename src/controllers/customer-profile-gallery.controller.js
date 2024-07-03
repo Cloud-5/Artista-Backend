@@ -32,17 +32,35 @@ class CustomerProfileGallery {
       [userId]
     );
   }
+
+  static deactivateUser(userId) {
+    return db.execute(
+      `UPDATE user
+       SET isActive = 0
+       WHERE user_id = ?`,
+      [userId]
+    );
+  }
 }
 
 exports.getAllCustomers = async (req, res, next) => {
   const userId = req.params.userId;
-  console.log("userId janani", userId);
   try {
     const customers = await CustomerProfileGallery.fetchAll(userId);
-
     res.status(200).json(customers[0]);
   } catch (error) {
     console.error("Error fetching customers:", error);
+    next(error);
+  }
+};
+
+exports.deactivateCustomer = async (req, res, next) => {
+  const userId = req.params.userId;
+  try {
+    await CustomerProfileGallery.deactivateUser(userId);
+    res.status(200).json({ message: 'User deactivated successfully' });
+  } catch (error) {
+    console.error("Error deactivating user:", error);
     next(error);
   }
 };

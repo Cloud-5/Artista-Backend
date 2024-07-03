@@ -1,38 +1,12 @@
 const db = require('../utils/database')
 const transporter = require('../config/nodemailer')
 
+
 exports.checkExistingEmail = (email) => {
     const sql = "SELECT * FROM user WHERE email=?";
     return db.execute(sql, [email]);
 };
-// exports.checkEmail = async (email) => {
-//   return await User.findOne({ email });
-// };
-exports.checkEmail = async (email) => {
-  try {
-    const [rows, fields] = await db.execute('SELECT * FROM user WHERE email = ?', [email]);
-    return rows[0]; // Assuming email is unique and you want the first match
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
 
-// exports.updatePassword = async (hashedPassword, email) => {
-//   return await User.updateOne({ email }, { $set: { password: hashedPassword } });
-// };
-exports.updatePassword = async (hashedPassword, email) => {
-  if (!hashedPassword || !email) {
-    throw new Error("Hashed password and email are required");
-  }
-  try {
-    const [result] = await db.execute('UPDATE user SET password_hash = ? WHERE email = ?', [hashedPassword, email]);
-    return result;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
 exports.createUser = async (user) => {
   console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
@@ -65,12 +39,6 @@ exports.createUser = async (user) => {
 };
 
 
-
-exports.updateUserPassword = (password, email) => {
-    const sql = "UPDATE user SET password_hash=? WHERE email=?";
-    return db.execute(sql, [password, email]);
-
-}
 
 exports.loginUser = (email) => {
     const sql = "SELECT user_id, email, password_hash, role, isActive FROM user WHERE email=?"
@@ -114,3 +82,44 @@ exports.sendForgotPasswordEmail = async (senderAddress, link) => {
     const sql = "SELECT * FROM user WHERE email=?";
     return db.execute(sql, [email]);
 };
+
+exports.checkUserId = async (user_id) => {
+  try {
+    const [rows, fields] = await db.execute('SELECT * FROM user WHERE user_id = ?', [user_id]);
+    return rows[0];
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+
+exports.checkEmail = async (email) => {
+  try {
+    const [rows, fields] = await db.execute('SELECT * FROM user WHERE email = ?', [email]);
+    return rows[0]; // Assuming email is unique and you want the first match
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+
+exports.updatePassword = async (hashedPassword, email) => {
+  if (!hashedPassword || !email) {
+    throw new Error("Hashed password and email are required");
+  }
+  try {
+    const [result] = await db.execute('UPDATE user SET password_hash = ? WHERE email = ?', [hashedPassword, email]);
+    return result;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+exports.updateUserPassword = (password, email) => {
+  const sql = "UPDATE user SET password_hash=? WHERE email=?";
+  return db.execute(sql, [password, email]);
+
+}
