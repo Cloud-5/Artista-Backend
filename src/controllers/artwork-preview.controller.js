@@ -3,6 +3,13 @@ const ArtPreview = require('../services/artwork-preview.service');
 exports.artworkPreview = async (req, res, next) => {
     const artId = req.params.artId;
     const userId = req.query.userId;
+    if (!artId) {
+        return res.status(400).json({ error: 'artId parameter is required' });
+    }
+
+    if (!userId) {
+        return res.status(400).json({ error: 'userId query parameter is required' });
+    }
     try {
         const artworkDetails = await ArtPreview.getArtDetails(artId, userId);
         const comments = await ArtPreview.getComments(artId);
@@ -15,11 +22,9 @@ exports.artworkPreview = async (req, res, next) => {
             bestArtworks: bestArtworks[0],
             relatedArtworks: relatedArtworks[0]
         };
-        console.log('related', relatedArtworks[0]);
         res.status(200).json(responseData);
     } catch (error) {
-        console.error('Error getting artwork details or comments:', error);
-        next(error);
+        return res.status(400).json({ error: 'Error getting artwork details' });
     }
 }
 
