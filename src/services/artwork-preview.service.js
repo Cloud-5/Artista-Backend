@@ -1,8 +1,9 @@
-const db = require('../utils/database');
+const db = require("../utils/database");
 
 class ArtPreview {
-    static getArtDetails(artId, userId) {
-        return db.execute(`SELECT 
+  static getArtDetails(artId, userId) {
+    return db.execute(
+      `SELECT 
         a.title AS artwork_name,
         CONCAT(u.fName, ' ', u.LName) AS artist,
         u.profession AS profession,
@@ -67,70 +68,164 @@ class ArtPreview {
     GROUP BY 
         a.artwork_id;
     
-    `, [userId, userId, userId, artId]);
+    `,
+      [userId, userId, userId, artId]
+    );
+  }
+
+  static getBestArtworks(artistId) {
+    return db.execute(
+      `SELECT 
+    a.artwork_id,
+    a.artist_id,
+    a.title,
+    a.price,
+    a.thumbnail_url,
+    a.description,
+    a.published_date,
+    a.category_id,
+    COALESCE(like_count, 0) AS like_count,
+    COALESCE(comment_count, 0) AS comment_count,
+    (COALESCE(like_count, 0) * 1) + (COALESCE(comment_count, 0) * 2) AS score
+    FROM 
+      artwork a
+    LEFT JOIN 
+      (SELECT artwork_id, COUNT(*) AS like_count 
+      FROM artwork_like 
+      GROUP BY artwork_id) al ON a.artwork_id = al.artwork_id
+    LEFT JOIN 
+      (SELECT artwork_id, COUNT(*) AS comment_count 
+      FROM comment 
+      GROUP BY artwork_id) c ON a.artwork_id = c.artwork_id
+    WHERE 
+      a.artist_id = ?
+    ORDER BY 
+      score DESC
+    LIMIT 10;`,
+      [artistId]
+    );
+  }
+
+  static getRelatedArtworks(artId){
+    return db.execute("CALL GetRelatedArtworks(?);",[artId]);
+  }
+
+  static getComments(artId) {
+    return db.execute(
+      "SELECT c.*, u.username,u.profile_photo_url FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?",
+      [artId]
+    );
+  }
+
+  static async insertComment(artId, userId, content) {
+    try {
+      const result = await db.execute(
+        "INSERT INTO comment (user_id, artwork_id, content) VALUES (?, ?, ?)",
+        [userId, artId, content]
+      );
+
+      // Get the ID of the inserted comment
+      const insertedCommentId = result[0].insertId;
+
+      // Retrieve the inserted comment from the database
+      const insertedComment = await this.getCommentById(insertedCommentId);
+      return insertedComment;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    
-
-    static getComments(artId) {
-        return db.execute(
-            'SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?',
-            [artId]
-        );
+  static async getCommentById(commentId) {
+    try {
+      const [commentRows, _] = await db.execute(
+        "SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.comment_id = ?",
+        [commentId]
+      );
+      console.log("fetched comment", commentRows);
+      if (commentRows.length === 0) {
+        throw new Error("Comment not found");
+      }
+      return commentRows[0]; // Return the first comment (there should be only one)
+    } catch (error) {
+      throw error;
     }
+  }
 
-    static insertComment(artId, userId, content) {
-        return db.execute(
-            'INSERT INTO comment (user_id, artwork_id, content) VALUES (?, ?, ?)',
-            [userId, artId, content]
-        )
+  static async insertReply(artId, userId, content, parentId) {
+    try {
+      const result = await db.execute(
+        "INSERT INTO comment (user_id, artwork_id, content, parent_comment_id) VALUES (?, ?, ?, ?)",
+        [userId, artId, content, parentId]
+      );
+      const insertedReplyId = result[0].insertId;
+      const insertedReply = await this.getCommentById(insertedReplyId);
+      return insertedReply;
+    } catch (error) {
+      throw error;
     }
-    static insertReply(artId, userId, content, parentId) {
-        return db.execute(
-            'INSERT INTO comment (user_id, artwork_id, content, parent_comment_id) VALUES (?, ?, ?, ?)',
-            [userId, artId, content, parentId]
-        );
+    return db.execute();
+  }
+
+  static async updateComment(commentId, content) {
+    try {
+      const result = await db.execute(
+        "UPDATE comment SET content = ? WHERE comment_id = ?",
+        [content, commentId]
+      );
+      console.log("result", result);
+      const updatedComment = await this.getCommentById(commentId);
+      console.log("updated comment id", updatedComment);
+      return updatedComment;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    static updateComment(commentId, content) {
-        return db.execute(
-            'UPDATE comment SET content = ? WHERE comment_id = ?',
-            [content, commentId]
-        );
-    }
+  static deleteComment(commentId) {
+    return db.execute("DELETE FROM comment WHERE comment_id = ?", [commentId]);
+  }
 
-    static deleteComment(commentId) {
-        return db.execute(
-            'DELETE FROM comment WHERE comment_id = ?',
-            [commentId]
-        );
-    }
+  static InsertLike(artId, userId) {
+    return db.execute(
+      "INSERT INTO artwork_like (artwork_id, user_id) VALUES (?, ?)",
+      [artId, userId]
+    );
+  }
 
-    static InsertLike(artId, userId) {
-        return db.execute('INSERT INTO artwork_like (artwork_id, user_id) VALUES (?, ?)', [artId, userId]);
-    }
+  static DeleteLike(artId, userId) {
+    return db.execute(
+      "DELETE FROM artwork_like WHERE artwork_id = ? AND user_id = ?",
+      [artId, userId]
+    );
+  }
 
-    static DeleteLike(artId, userId) {
-        return db.execute('DELETE FROM artwork_like WHERE artwork_id = ? AND user_id = ?', [artId, userId]);
-    }
+  static InsertFollow(customerId, artistId) {
+    return db.execute(
+      "INSERT INTO artist_follower (follower_user_id, followed_artist_user_id) VALUES (?, ?)",
+      [customerId, artistId]
+    );
+  }
 
-    static InsertFollow(customerId, artistId) {
-        return db.execute('INSERT INTO artist_follower (follower_user_id, followed_artist_user_id) VALUES (?, ?)', [customerId, artistId]);
-    }
+  static DeleteFollow(customerId, artistId) {
+    return db.execute(
+      "DELETE FROM artist_follower WHERE follower_user_id = ? AND followed_artist_user_id = ?",
+      [customerId, artistId]
+    );
+  }
 
-    static DeleteFollow(customerId, artistId) {
-        return db.execute('DELETE FROM artist_follower WHERE follower_user_id = ? AND followed_artist_user_id = ?', [customerId, artistId]);
-    }
+  static addToGallery(artId, userId) {
+    return db.execute(
+      "INSERT INTO gallery (artwork_id, customer_user_id) VALUES (?, ?)",
+      [artId, userId]
+    );
+  }
 
-
-    static addToGallery(artId, userId) {
-        return db.execute('INSERT INTO gallery (artwork_id, customer_user_id) VALUES (?, ?)', [artId, userId]);
-    }
-
-    static removeFromGallery(artId, userId) {
-        return db.execute('DELETE FROM gallery WHERE artwork_id = ? AND customer_user_id = ?', [artId, userId]);
-    }
-
+  static removeFromGallery(artId, userId) {
+    return db.execute(
+      "DELETE FROM gallery WHERE artwork_id = ? AND customer_user_id = ?",
+      [artId, userId]
+    );
+  }
 }
 
 module.exports = ArtPreview;

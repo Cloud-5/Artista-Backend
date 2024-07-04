@@ -4,6 +4,6 @@ const preferencesController = require('../controllers/preference.controller');
 
 router.get('/', preferencesController.showPreference);
 router.post('/', preferencesController.addPreference);
-
+router.get('/checkPreferences/:userId', preferencesController.checkPreferences);
 
 module.exports = router;

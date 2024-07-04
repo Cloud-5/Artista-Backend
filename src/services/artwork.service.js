@@ -20,24 +20,11 @@ module.exports = class Artwork {
   }
 
   static async getArtworkByArtistId(artistId) {
-    return db.execute(`SELECT * FROM artwork WHERE artist_id = ?`, [artistId]);
+    return db.execute(`SELECT * FROM artwork WHERE artist_id = ?`,[artistId]);
   }
 
   static async getLikesForArtwork(artworkId) {
-    return db.execute(
-      "SELECT COUNT(user_id) as count FROM artwork_like WHERE artwork_id = ?",
-      [artworkId]
-    );
-  }
-
-  static async getArtworkById(artworkId) {
-    return db.execute(`SELECT * FROM artwork WHERE artwork_id = ?`, [
-      artworkId,
-    ]);
-  }
-
-  static async deleteArtwork(artworkId) {
-    return db.execute(`DELETE FROM artwork WHERE artwork_id = ?`, [artworkId]);
+    return db.execute(`SELECT COUNT(user_id) as count FROM artwork_like WHERE artwork_id = ?`,[artworkId]);
   }
 
   static async updateArtwork(artworkId, artwork) {

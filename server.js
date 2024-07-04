@@ -1,9 +1,10 @@
-require('dotenv').config()
 const express = require('express');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 
+//buddhi
+const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
+//gihan
 const userRoutes = require('./src/routes/userRoutes');
 
 
@@ -21,13 +22,21 @@ const cartRouter = require('./src/routes/cart.routes');
 const categoriesRouter = require('./src/routes/category.routes');
 const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
-
-
+const cart2Router = require('./src/routes/cart2.routes');
 
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 
+const artistportfolioRouter = require('./src/routes/artist-portfolio.routes');
+const artistportfoliocreationsRouter = require('./src/routes/artist-portfolio-creations.routes');
+const customergalleryartsRouter = require('./src/routes/customer-gallery-arts.routes');
+const customerprofilegalleryRouter = require('./src/routes/customer-profile-gallery.routes');
+const feedbacklistRouter = require('./src/routes/feedback-list.routes');
+const followingartistslistRouter = require('./src/routes/following-artists-list.routes');
+const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
+const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
+const artCard = require('./src/routes/art-card.routes');
 const artistFollowersRouter = require('./src/routes/artist-followers');
 const artistFeedbackRouter = require('./src/routes/artist-feedback.router');
 const artistEditRouter = require('./src/routes/artist-edit.routes');
@@ -38,7 +47,7 @@ const artistEditRouter = require('./src/routes/artist-edit.routes');
 
 
 const app = express();
-app.use(cors());
+
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -64,19 +73,31 @@ app.use('/artist-feedback', artistFeedbackRouter);
 
 
 app.use('/artist-page', artistPageRouter);
-
 app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/preferences', preferencesRouter);
 app.use('/personalize', personalizeRouter);
+app.use('/cart2', cart2Router);
 
+
+app.use('/artist-portfolio', artistportfolioRouter);
+app.use('/artist-portfolio-creations', artistportfoliocreationsRouter);
+app.use('/customer-gallery-arts', customergalleryartsRouter);
+app.use('/customer-profile-gallery', customerprofilegalleryRouter);
+app.use('/feedback-list', feedbacklistRouter);
+app.use('/following-artists-list', followingartistslistRouter);
+app.use('/purchase-history', purchasehistoryRouter);
+
+app.use('/search-art', searchartsRouter);
 
 app.use('/edit-customer-profile', editCustomerProfileRoutes);
 
 app.use('/art',artRouter);
 app.use ('/artist',artistRouter);
 app.use('/artwork-preview', artworkPreviewRouter);
+
+app.use('/art-card', artCard);
 
 app.use('/customer-profile-gallery', customerProfileGalleryRouter);
 app.use('/customer-gallery-arts', CustomerGalleryArtRouter);
