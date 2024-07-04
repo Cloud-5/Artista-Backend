@@ -70,6 +70,8 @@ class ArtPreview {
     `, [userId, userId, userId, artId]);
     }
 
+    
+
     static getComments(artId) {
         return db.execute(
             'SELECT c.*, u.username FROM comment c JOIN user u ON c.user_id = u.user_id WHERE c.artwork_id = ?',

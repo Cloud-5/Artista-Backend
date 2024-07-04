@@ -12,6 +12,9 @@ const userRouter = require('./src/routes/artist-request.routes');
 const dashboardRouter = require('./src/routes/dashboard.router');
 const userManagementRouter = require('./src/routes/user-management.routes');
 
+const artworkRouter = require('./src/routes/artwork-routes');
+const artistNetworkRouter = require('./src/routes/network.router');
+
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
@@ -25,6 +28,14 @@ const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
+const artistFollowersRouter = require('./src/routes/artist-followers');
+const artistFeedbackRouter = require('./src/routes/artist-feedback.router');
+const artistEditRouter = require('./src/routes/artist-edit.routes');
+
+
+
+
+
 
 const app = express();
 app.use(cors());
@@ -47,7 +58,13 @@ app.use('/artist-request', userRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/user-management', userManagementRouter);
 
+app.use('/artwork', artworkRouter);
+app.use('/artist-network', artistNetworkRouter);
+app.use('/artist-feedback', artistFeedbackRouter);
+
+
 app.use('/artist-page', artistPageRouter);
+
 app.use('/for-you', forYouRouter);
 app.use('/cart', cartRouter);
 app.use('/categories', categoriesRouter);
@@ -59,6 +76,26 @@ app.use('/edit-customer-profile', editCustomerProfileRoutes);
 
 app.use('/art',artRouter);
 app.use ('/artist',artistRouter);
+app.use('/artwork-preview', artworkPreviewRouter);
+
+app.use('/customer-profile-gallery', customerProfileGalleryRouter);
+app.use('/customer-gallery-arts', CustomerGalleryArtRouter);
+app.use('/following-artists-list', followingArtistsListRouter);
+app.use('/artist-portfolio', artistPortfolio);
+app.use('/artist-portfolio-creations', artistPortfolioCreations);
+app.use('/purchase-history', purchaseHistoryRouter);
+app.use('/search-art', searchArtRouter);
+app.use('/feedback-list', feedbackListRouter);
+
+app.use('/artist-followers',artistFollowersRouter);
+app.use('/artist-edit', artistEditRouter);
+
+
+
+
+
+
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })
