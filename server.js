@@ -6,6 +6,8 @@ const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
 //gihan
 const userRoutes = require('./src/routes/userRoutes');
+const artRouter = require ('./src/routes/artRoutes');
+const artistRouter = require('./src/routes/artistRoutes')
 
 //Kaumi
 const artistPageRouter = require('./src/routes/artist-page.routes');
@@ -16,9 +18,7 @@ const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
 const cart2Router = require('./src/routes/cart2.routes');
 
-const artRouter = require ('./src/routes/artRoutes');
-const artistRouter = require('./src/routes/artistRoutes')
-
+//janani
 const artistportfolioRouter = require('./src/routes/artist-portfolio.routes');
 const artistportfoliocreationsRouter = require('./src/routes/artist-portfolio-creations.routes');
 const customergalleryartsRouter = require('./src/routes/customer-gallery-arts.routes');
@@ -29,6 +29,8 @@ const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
 const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
 const artCard = require('./src/routes/art-card.routes');
+
+const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
 const app = express();
 
@@ -71,8 +73,25 @@ app.use('/art',artRouter);
 app.use ('/artist',artistRouter);
 
 app.use('/artwork-preview', artworkPreviewRouter);
-
++
 app.use('/art-card', artCard);
+
+app.post('/upload', upload.single('image'), (req, res) => {
+    res.json({ image: req.file });
+});
+
+app.delete('/delete/:key', (req, res) => {
+    const key = req.params.key;
+    console.log('key', key)
+
+    deleteFromS3(key, (err, data) => {
+        if (err) {
+            res.status(500).json({ error: 'Failed to delete object from S3' });
+        } else {
+            res.status(200).json({ message: 'Object deleted successfully' });
+        }
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
