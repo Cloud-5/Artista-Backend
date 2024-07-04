@@ -11,7 +11,7 @@ exports.createUser = async (user) => {
   console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
   
-  const sql = "INSERT INTO user(username, email, password_hash, fName, LName, dob, location, role, isActive, firebase_uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const sql = "INSERT INTO user(username, email, password_hash, fName, LName, dob, location, role, is_approved, firebase_uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   console.log("Query hit!!");
   
   // Log user details to ensure no undefined values
@@ -41,7 +41,7 @@ exports.createUser = async (user) => {
 
 
 exports.loginUser = (email) => {
-    const sql = "SELECT user_id, email, password_hash, role, isActive FROM user WHERE email=?"
+    const sql = "SELECT user_id, email, password_hash, role, is_approved,firebase_uid FROM user WHERE email=?"
     return db.execute(sql, [email])
 }
 exports.forgotPasword = async (email,link) => {
@@ -71,6 +71,23 @@ exports.sendForgotPasswordEmail = async (senderAddress, link) => {
         to: senderAddress,
         subject: "New Password",
         html: `Please reset your password by clicking <a href="${link}">here</a>.<br>This email is valid for two days.`,
+      });
+    } catch (e) {
+      error = true;
+    }
+  
+    return error;
+  };
+
+  exports.verificationEmail = async (senderAddress) => {
+    let error = false;
+    try {
+      
+      transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: senderAddress,
+        subject: "Email Verification",
+        html: `<p>REGISTERED SUCCESSFULLY!<p>`,
       });
     } catch (e) {
       error = true;

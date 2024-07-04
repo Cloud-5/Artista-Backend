@@ -9,7 +9,7 @@ class Art {
     a.price AS artwork_price,
     CONCAT(u.fName, ' ', u.LName) AS artist_name,
    
-    a.thumbnail_url,
+    a.thumbnail_url AS artwork_image_url,
     COUNT(al.artwork_id) AS total_likes,
     MIN(al.liked_at) AS first_like_time,
     MAX(al.liked_at) AS last_like_time,
@@ -24,7 +24,8 @@ GROUP BY
     a.artwork_id, artwork_name,  artist_name, artwork_price, a.thumbnail_url
 ORDER BY 
     total_likes DESC,
-    like_time_span ASC;
+    like_time_span ASC
+    LIMIT 20;
         `,
     
     );
@@ -33,7 +34,7 @@ ORDER BY
 }
 
 exports.getArtwork = async (req, res, next) => {
-  const userId = req.params.userId;
+  
   try {
     const gallery = await Art.fetchArtwork();
     res.status(200).json(gallery[0]);

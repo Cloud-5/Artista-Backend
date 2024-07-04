@@ -4,7 +4,9 @@ const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
-const admin = require('../config/firebaseAdmin')
+const admin = require('../config/firebaseAdmin');
+const axios = require('axios');
+
 schema
     .is().min(8)
     .is().max(100)
@@ -50,7 +52,9 @@ schema
     
         // Save user to database
         await userService.createUser(user);
-    
+
+        await userService.verificationEmail(user.email);
+
         return res.status(201).json({ message: "Successfully Registered" });
       } catch (error) {
         console.error('Error during signup:', error);
@@ -63,16 +67,27 @@ schema
 
     exports.login = async (req, res) => {
       try {
-        const { email, password } = req.body;
+        const { email, password , recaptchaToken } = req.body;
     
+        const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+        const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
+        const recaptchaResponse = await axios.post(recaptchaUrl);
+        console.log(recaptchaResponse.data);
+        const recaptchaData = recaptchaResponse.data;
+    
+        if (!recaptchaData.success) {
+          return res.status(400).json({ message: 'reCAPTCHA verification failed' });
+        }
+
         const user = await userService.loginUser(email);
+        console.log(user);
     
         if (user[0][0].length === 0) {
           return res.status(404).json({ message: "Invalid Credentials" });
         }
     
-        if (user[0][0].isActive === 0) {
-          return res.status(401).json({ message: "Wait for Admin Approval" });
+        if (user[0][0].is_approved === 0) {
+          return res.status(200).json({ message: "Wait for Admin Approval" });
         }
     
         // Get user UID from Firebase Authentication
@@ -80,11 +95,12 @@ schema
         const uid = userRecord.uid;
     
         const response = { email: email, role: user[0][0].role, uid: uid };
-        const accessToken = jwt.sign(response, process.env.ACCESS_TOKEN, { expiresIn: '8h' });
-    
+        const accessToken = jwt.sign(response, process.env.JWT_SECRET, { expiresIn: '8h' });
+      
         return res.status(200).json({ message: "Successful Login", accessToken: accessToken , data: user[0][0] });
       } catch (error) {
         console.error('Error fetching user:', error);
+      
         return res.status(500).json({ error: error.message });
       }
     };
