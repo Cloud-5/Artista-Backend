@@ -6,7 +6,7 @@ const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
 const admin = require('../config/firebaseAdmin');
 const axios = require('axios');
-
+const { v4: uuidv4 } = require('uuid');
 schema
     .is().min(8)
     .is().max(100)
@@ -22,7 +22,9 @@ schema
       console.log(req.body);
       try {
         const user = req.body.user;
-    
+
+        user.user_index = uuidv4();
+        
         const existingUser = await userService.checkExistingEmail(user.email);
     
         if (existingUser[0].length > 0) {
