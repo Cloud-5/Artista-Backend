@@ -6,16 +6,11 @@ const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
 
 //gihan
 const userRoutes = require('./src/routes/userRoutes');
+const artRouter = require ('./src/routes/artRoutes');
+const artistRouter = require('./src/routes/artistRoutes')
 
 
-const artCategoryRouter = require('./src/routes/art-categories.routes');
-const userRouter = require('./src/routes/artist-request.routes');
-const dashboardRouter = require('./src/routes/dashboard.router');
-const userManagementRouter = require('./src/routes/user-management.routes');
-
-const artworkRouter = require('./src/routes/artwork-routes');
-const artistNetworkRouter = require('./src/routes/network.router');
-
+//kaumi
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
 const cartRouter = require('./src/routes/cart.routes');
@@ -24,9 +19,7 @@ const preferencesRouter = require('./src/routes/preferences.route');
 const personalizeRouter = require('./src/routes/personalize.routes');
 const cart2Router = require('./src/routes/cart2.routes');
 
-const artRouter = require ('./src/routes/artRoutes');
-const artistRouter = require('./src/routes/artistRoutes')
-
+//janani
 const artistportfolioRouter = require('./src/routes/artist-portfolio.routes');
 const artistportfoliocreationsRouter = require('./src/routes/artist-portfolio-creations.routes');
 const customergalleryartsRouter = require('./src/routes/customer-gallery-arts.routes');
@@ -37,11 +30,13 @@ const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
 const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
 const artCard = require('./src/routes/art-card.routes');
+
+//dhanushka
 const artistFollowersRouter = require('./src/routes/artist-followers');
-const artistFeedbackRouter = require('./src/routes/artist-feedback.router');
+const artistFeedbackRouter = require('./src/routes/artist-feedback.routes');
 const artistEditRouter = require('./src/routes/artist-edit.routes');
-
-
+const artworkRouter = require('./src/routes/artwork-routes');
+const artistNetworkRouter = require('./src/routes/network.router');
 
 
 
@@ -61,11 +56,6 @@ app.use((req, res, next) => {
 
 
 app.use('/user', userRoutes);
-
-app.use('/art-categories', artCategoryRouter);
-app.use('/artist-request', userRouter);
-app.use('/dashboard', dashboardRouter);
-app.use('/user-management', userManagementRouter);
 
 app.use('/artwork', artworkRouter);
 app.use('/artist-network', artistNetworkRouter);
@@ -99,22 +89,13 @@ app.use('/artwork-preview', artworkPreviewRouter);
 
 app.use('/art-card', artCard);
 
-app.use('/customer-profile-gallery', customerProfileGalleryRouter);
-app.use('/customer-gallery-arts', CustomerGalleryArtRouter);
-app.use('/following-artists-list', followingArtistsListRouter);
-app.use('/artist-portfolio', artistPortfolio);
-app.use('/artist-portfolio-creations', artistPortfolioCreations);
-app.use('/purchase-history', purchaseHistoryRouter);
-app.use('/search-art', searchArtRouter);
-app.use('/feedback-list', feedbackListRouter);
+app.use('/artist-portfolio-creations', artistportfolioRouter);
+app.use('/purchase-history', purchasehistoryRouter);
+app.use('/search-art', searchartsRouter);
+app.use('/feedback-list', feedbacklistRouter);
 
 app.use('/artist-followers',artistFollowersRouter);
 app.use('/artist-edit', artistEditRouter);
-
-
-
-
-
 
 
 app.listen(port, () => {
