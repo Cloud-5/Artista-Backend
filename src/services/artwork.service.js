@@ -46,4 +46,47 @@ module.exports = class Artwork {
       [artwork.title, artwork.description, artwork.price, artworkId]
     );
   }
+
+
+
+  async addArtworkByArtist(artwork) {
+    const { artist_id, title, price, thumbnail_url, description, published_date, category_id } = artwork;
+    const [result] = await db.query(
+      'INSERT INTO artwork (artist_id, title, price, thumbnail_url, description, published_date, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [artist_id, title, price, thumbnail_url, description, published_date, category_id]
+    );
+    return result.insertId;
+  }
+
+
+  async addArtworkByArtist(artwork) {
+    const { artist_id, title, price, thumbnail_url, description, published_date, category_id, tags } = artwork;
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      const [result] = await connection.query(
+        'INSERT INTO artwork (artist_id, title, price, thumbnail_url, description, published_date, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [artist_id, title, price, thumbnail_url, description, published_date, category_id]
+      );
+
+      const artworkId = result.insertId;
+
+      if (tags && tags.length > 0) {
+        const tagInserts = tags.map(tag => [artworkId, tag]);
+        await connection.query(
+          'INSERT INTO artwork_tag (artwork_id, tag_name) VALUES ?',
+          [tagInserts]
+        );
+      }
+
+      await connection.commit();
+      return artworkId;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
 };

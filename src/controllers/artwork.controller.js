@@ -49,3 +49,15 @@ exports.deleteArtwork = async (req, res, next) => {
         console.error("Error deleting artwork:", error);
     }
 }
+
+
+exports.addArtworkByArtist = async (req, res, next) => {
+    try {
+      const artworkId = await ArtworkService.addArtworkByArtist(req.body);
+      res.status(200).json({ message: "Artwork added successfully!", artworkId });
+    } catch (error) {
+      console.error("Error adding artwork:", error);
+      res.status(500).send("Server error");
+    }
+  };
+  

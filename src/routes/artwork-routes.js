@@ -8,5 +8,6 @@ router.get('/likes/:id', artworkController.getLikesForArtwork);
 router.post('/', artworkController.postArtwork);
 router.delete('/:id', artworkController.deleteArtwork);
 router.put('/:id', artworkController.updateArtwork);
+router.post('/:id/uploadArtwork', artworkController.addArtworkByArtist);
 
 module.exports = router;

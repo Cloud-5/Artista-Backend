@@ -13,8 +13,10 @@
 const express = require('express');
 const router = express.Router();
 const { getArtistFollowers } = require('../controllers/artist-followers.controller');
+const { deleteFollower } = require('../models/network.model');
 
-// Define route to get followers of an artist by artist's ID
 router.get('/:artistId/followers', getArtistFollowers);
+router.delete('/:artistId/followers/:followwerId',deleteFollower);
+
 
 module.exports = router;

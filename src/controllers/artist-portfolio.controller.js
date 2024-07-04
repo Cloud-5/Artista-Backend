@@ -29,6 +29,13 @@ class ArtistPortfolio {
         `, [artistId]);
     }
 
+
+static artistCreationCount(artistId){
+    return db.execute(`
+        SELECT COUNT(*) AS count FROM artwork WHERE artist_id = ?`,[artistId]);
+}
+
+
     static insertFeedback(artistId, feedback, customerId){
         return db.execute(`
             INSERT INTO feedback (artist_user_id , feedback, customer_user_id)
@@ -47,6 +54,18 @@ exports.getArtistDetails = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.getArtworksCount = (req, res) => {
+    const artistId = req.params.artistId;
+  
+    db.execute('SELECT COUNT(*) AS count FROM artwork WHERE artist_id = ?', [artistId])
+      .then(result => {
+        res.status(200).json(result[0]);
+      })
+      .catch(err => {
+        res.status(500).json({ error: err });
+      });
+  };
 
 exports.postFeedback = async (req, res, next) => {
     exports.postFeedback = async (req, res, next) => {
