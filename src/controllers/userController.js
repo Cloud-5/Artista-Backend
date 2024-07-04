@@ -66,6 +66,7 @@ schema
         const { email, password } = req.body;
     
         const user = await userService.loginUser(email);
+        console.log(user);
     
         if (user[0][0].length === 0) {
           return res.status(404).json({ message: "Invalid Credentials" });
