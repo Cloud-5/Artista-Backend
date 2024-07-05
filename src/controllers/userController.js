@@ -23,7 +23,7 @@ schema
       try {
         const user = req.body.user;
 
-        user.user_index = uuidv4();
+        user.user_id = uuidv4();
         
         const existingUser = await userService.checkExistingEmail(user.email);
     
@@ -89,7 +89,7 @@ schema
         }
     
         if (user[0][0].is_approved === 0) {
-          return res.status(200).json({ message: "Wait for Admin Approval" });
+          return res.status(403).json({ message: "Wait for Admin Approval" });
         }
     
         // Get user UID from Firebase Authentication
@@ -224,5 +224,5 @@ exports.changePassword = async (req, res) => {
   } catch (error) {
       console.error('Error changing password:', error);
       return res.status(500).json({ message: "Internal server error" });
-  }
+}
 };
