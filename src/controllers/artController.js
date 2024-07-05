@@ -13,7 +13,7 @@ class Art {
     COUNT(al.artwork_id) AS total_likes,
     MIN(al.liked_at) AS first_like_time,
     MAX(al.liked_at) AS last_like_time,
-    TIMESTAMPDIFF(SECOND, MIN(al.liked_at), MAX(al.liked_at)) AS like_time_span
+     TIMESTAMPDIFF(SECOND, MIN(al.liked_at), MAX(al.liked_at)) AS like_time_span
 FROM 
     artwork a
 JOIN 

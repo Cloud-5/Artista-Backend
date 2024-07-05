@@ -11,7 +11,7 @@ exports.createUser = async (user) => {
   console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
   
-  const sql = "INSERT INTO user(user_index,username, email, password_hash, fName, LName, dob, location, role, is_approved, firebase_uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+  const sql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, is_approved, firebase_uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
   console.log("Query hit!!");
   
   // Log user details to ensure no undefined values
@@ -29,7 +29,7 @@ exports.createUser = async (user) => {
   });
 
   try {
-      const result = await db.execute(sql, [user.user_index,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, status, user.firebase_uid]);
+      const result = await db.execute(sql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, status, user.firebase_uid]);
       console.log("User created successfully:", result);
       return result;
   } catch (error) {
@@ -137,6 +137,6 @@ exports.updatePassword = async (hashedPassword, email) => {
 
 exports.updateUserPassword = (password, email) => {
   const sql = "UPDATE user SET password_hash=? WHERE email=?";
-  return db.execute(sql, [password, email]);
+  return db.execute(sql, [password, email]);
 
 }
