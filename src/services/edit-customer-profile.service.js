@@ -3,6 +3,7 @@ const db = require("../utils/database");
 class EditCustomerProfile {
   static update(
     userId,
+    profile_photo_url,
     firstName,
     lastName,
     description,
@@ -15,6 +16,7 @@ class EditCustomerProfile {
             UPDATE 
                 user 
             SET 
+                profile_photo_url = ?,
                 fName = ?,
                 LName = ?,
                 description = ?,
@@ -24,12 +26,13 @@ class EditCustomerProfile {
             WHERE 
                 user_id = ?
             `,
-      [firstName, lastName, description, email, newPassword, location, userId]
+      [profile_photo_url,firstName, lastName, description, email, newPassword, location, userId]
     );
   }
 
   static updateWithoutPassword(
     userId,
+    profile_photo_url,
     firstName,
     lastName,
     description,
@@ -41,6 +44,7 @@ class EditCustomerProfile {
             UPDATE 
                 user 
             SET 
+                profile_photo_url = ?,
                 fName = ?,
                 LName = ?,
                 description = ?,
@@ -49,7 +53,7 @@ class EditCustomerProfile {
             WHERE 
                 user_id = ?
             `,
-      [firstName, lastName, description, email, location, userId]
+      [profile_photo_url,firstName, lastName, description, email, location, userId]
     );
   }
 }

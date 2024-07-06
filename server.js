@@ -29,6 +29,7 @@ const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
 const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
 const artCard = require('./src/routes/art-card.routes');
+const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
 const app = express();
 
@@ -41,6 +42,23 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
+});
+
+app.post('/upload', upload.single('image'), (req, res) => {
+    res.json({ image: req.file });
+});
+
+app.delete('/delete/:key', (req, res) => {
+    const key = req.params.key;
+    console.log('key', key)
+
+    deleteFromS3(key, (err, data) => {
+        if (err) {
+            res.status(500).json({ error: 'Failed to delete object from S3' });
+        } else {
+            res.status(200).json({ message: 'Object deleted successfully' });
+        }
+    });
 });
 
 
