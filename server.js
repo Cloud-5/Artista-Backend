@@ -37,9 +37,10 @@ const artistFeedbackRouter = require('./src/routes/artist-feedback.routes');
 const artistEditRouter = require('./src/routes/artist-edit.routes');
 const artworkRouter = require('./src/routes/artwork-routes');
 const artistNetworkRouter = require('./src/routes/network.router');
+const artistNewHomeRouter=require('./src/routes/artist-new-home.routes');
 
 
-
+const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
 const app = express();
 
@@ -96,7 +97,25 @@ app.use('/feedback-list', feedbacklistRouter);
 
 app.use('/artist-followers',artistFollowersRouter);
 app.use('/artist-edit', artistEditRouter);
+app.use('/artist-new-home',artistNewHomeRouter);
 
+
+app.post('/upload', upload.single('image'), (req, res) => {
+    res.json({ image: req.file });
+});
+
+app.delete('/delete/:key', (req, res) => {
+    const key = req.params.key;
+    console.log('key', key)
+
+    deleteFromS3(key, (err, data) => {
+        if (err) {
+            res.status(500).json({ error: 'Failed to delete object from S3' });
+        } else {
+            res.status(200).json({ message: 'Object deleted successfully' });
+        }
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
