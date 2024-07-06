@@ -9,7 +9,6 @@ const userRoutes = require('./src/routes/userRoutes');
 const artRouter = require ('./src/routes/artRoutes');
 const artistRouter = require('./src/routes/artistRoutes')
 
-
 //kaumi
 const artistPageRouter = require('./src/routes/artist-page.routes');
 const forYouRouter = require('./src/routes/foryou.routes');
@@ -39,6 +38,8 @@ const artworkRouter = require('./src/routes/artwork-routes');
 const artistNetworkRouter = require('./src/routes/network.router');
 const artistNewHomeRouter=require('./src/routes/artist-new-home.routes');
 
+
+const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
 const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
@@ -87,7 +88,7 @@ app.use('/edit-customer-profile', editCustomerProfileRoutes);
 app.use('/art',artRouter);
 app.use ('/artist',artistRouter);
 app.use('/artwork-preview', artworkPreviewRouter);
-
++
 app.use('/art-card', artCard);
 
 app.use('/artist-portfolio-creations', artistportfolioRouter);
