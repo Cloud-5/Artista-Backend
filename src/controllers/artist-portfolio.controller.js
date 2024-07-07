@@ -1,4 +1,5 @@
 const db = require("../utils/database");
+const artistUploadArtworks=require('../services/artist-upload-artwork.service');
 
 class ArtistPortfolio {
   static fetchArtistDetails(artistId) {
@@ -132,4 +133,6 @@ exports.unfollowArtist = async (req, res, next) => {
       next(error);
   }
 };
+
+
 
