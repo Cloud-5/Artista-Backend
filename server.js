@@ -37,8 +37,10 @@ const artistFeedbackRouter = require('./src/routes/artist-feedback.routes');
 const artistEditRouter = require('./src/routes/artist-edit.routes');
 const artworkRouter = require('./src/routes/artwork-routes');
 const artistNetworkRouter = require('./src/routes/network.router');
+const artistNewHomeRouter=require('./src/routes/artist-new-home.routes');
 
 
+const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
 const app = express();
 
@@ -112,6 +114,7 @@ app.use('/feedback-list', feedbacklistRouter);
 
 app.use('/artist-followers',artistFollowersRouter);
 app.use('/artist-edit', artistEditRouter);
+app.use('/artist-new-home',artistNewHomeRouter);
 
 
 app.post('/upload', upload.single('image'), (req, res) => {
