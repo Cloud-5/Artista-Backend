@@ -78,5 +78,9 @@ exports.fetchDistinctLocations = async (req, res, next) => {
         res.status(200).json(locations);
     } catch (error) {
         next(error);
-}
+    }
 };
+
+
+
+

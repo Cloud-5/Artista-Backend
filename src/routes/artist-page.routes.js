@@ -7,4 +7,4 @@ router.get('/', artistController.fetchAll);
 router.get('/locations', artistController.fetchDistinctLocations);
 
 
-module.exports=router;
+module.exports = router;

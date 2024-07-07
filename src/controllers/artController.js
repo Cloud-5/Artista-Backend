@@ -43,7 +43,3 @@ exports.getArtwork = async (req, res, next) => {
     next(error);
 }
 };
-
-
-
-
