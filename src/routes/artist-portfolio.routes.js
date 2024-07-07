@@ -9,3 +9,4 @@ router.post('/:artistId/follow', ArtistPortfolioController.followArtist);
 router.post('/:artistId/unfollow', ArtistPortfolioController.unfollowArtist);
 
 module.exports = router;
+
