@@ -29,7 +29,6 @@ const purchasehistoryRouter = require('./src/routes/purchase-history.routes');
 const searchartsRouter = require('./src/routes/search-art.routes');
 const editCustomerProfileRoutes = require('./src/routes/edit-customer-profile.routes');
 const artCard = require('./src/routes/art-card.routes');
-const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 
 //dhanushka
 const artistFollowersRouter = require('./src/routes/artist-followers');
