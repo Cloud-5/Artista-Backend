@@ -12,7 +12,7 @@ class Foryou {
         WHERE a.category_id IN (
           SELECT category_id
           FROM preferences
-          WHERE user_id = ${userId}
+          WHERE user_id = '${userId}'
         )
       `;
       const [totalCountRows] = await db.execute(totalCountQuery);
@@ -23,29 +23,33 @@ class Foryou {
 
       // Fetch paginated artworks with trending score
       const fetchQuery = `
-        SELECT 
-          a.artwork_id,
-          a.title AS artwork_title,
-          a.price,
-          COUNT(al.artwork_id) AS total_likes,
-          CONCAT(u.fName, ' ', u.LName) AS artist_name,
-          a.thumbnail_url,
-          COALESCE(SUM(CASE WHEN al.liked_at >= NOW() - INTERVAL 30 DAY THEN 1 ELSE 0 END), 0) AS trending_score
-        FROM 
-          artwork a
-        INNER JOIN 
-          user u ON a.artist_id = u.user_id
-        LEFT JOIN 
-          artwork_like al ON a.artwork_id = al.artwork_id
-        WHERE
-          a.category_id IN (
-            SELECT category_id
-            FROM preferences
-            WHERE user_id = ${userId}
-          )
-        GROUP BY 
-          a.artwork_id
-        ORDER BY trending_score DESC, a.artwork_id
+      SELECT 
+      a.artwork_id,
+      a.title AS artwork_title,
+      a.price,
+      COUNT(al.artwork_id) AS total_likes,
+      CONCAT(u.fName, ' ', u.LName) AS artist_name,
+      a.thumbnail_url,
+      COALESCE(SUM(CASE 
+        WHEN al.liked_at >= NOW() - INTERVAL 1 DAY THEN 3
+        WHEN al.liked_at >= NOW() - INTERVAL 7 DAY THEN 2
+        WHEN al.liked_at >= NOW() - INTERVAL 30 DAY THEN 1
+        ELSE 0 END), 0) AS trending_score
+    FROM 
+      artwork a
+    INNER JOIN 
+      user u ON a.artist_id = u.user_id
+    LEFT JOIN 
+      artwork_like al ON a.artwork_id = al.artwork_id
+    WHERE
+      a.category_id IN (
+        SELECT category_id
+        FROM preferences
+        WHERE user_id = '${userId}'
+      )
+    GROUP BY 
+      a.artwork_id
+    ORDER BY trending_score DESC, a.artwork_id
         LIMIT ${pageSize} OFFSET ${offset};
       `;
       

@@ -6,7 +6,7 @@ class Preference {
     }
 
     static async addPreference(user_id, category_ids) {
-        const values = category_ids.map(category_id => `(${user_id}, ${category_id})`).join(',');
+        const values = category_ids.map(category_id => `('${user_id}', ${category_id})`).join(',');
         const sql = `INSERT INTO preferences (user_id, category_id) VALUES ${values}`;
         return await db.execute(sql);
     }
