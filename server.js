@@ -41,6 +41,7 @@ const artistNetworkRouter = require('./src/routes/network.router');
 
 
 const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
+const { uploadFiles, getGltfFile,deleteFolder  } = require('./src/middlewares/folder-upload');
 
 const app = express();
 
@@ -51,7 +52,7 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization,uploadType, folder, subfolder');
     next();
 });
 
@@ -99,22 +100,59 @@ app.use('/artist-followers',artistFollowersRouter);
 app.use('/artist-edit', artistEditRouter);
 
 
-app.post('/upload', upload.single('image'), (req, res) => {
-    res.json({ image: req.file });
-});
-
-app.delete('/delete/:key', (req, res) => {
-    const key = req.params.key;
-    console.log('key', key)
-
-    deleteFromS3(key, (err, data) => {
-        if (err) {
-            res.status(500).json({ error: 'Failed to delete object from S3' });
-        } else {
-            res.status(200).json({ message: 'Object deleted successfully' });
-        }
+app.post('/upload', (req, res) => {
+    upload(req, res, (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      console.log('req.file', req.file);
+      console.log('req.headers', req.headers);
+      res.json({ image: req.file });
     });
-});
+  });
+  
+  app.delete('/delete/:key', (req, res) => {
+    const key = req.params.key;
+    console.log('key', key);
+  
+    deleteFromS3(key, (err, data) => {
+      if (err) {
+        res.status(500).json({ error: 'Failed to delete object from S3' });
+      } else {
+        res.status(200).json({ message: 'Object deleted successfully' });
+      }
+    });
+  });
+
+
+app.post('/uploadFolder', (req, res) => {
+    const subfolder = req.headers.subfolder;
+    console.log('subfolder', subfolder);
+    uploadFiles(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      const gltfFile = getGltfFile(req.files);
+      if (gltfFile) {
+        res.json({ gltfFile: gltfFile.location, subfolderName: subfolder });
+      } else {
+        res.status(400).json({ error: 'GLTF file not found' });
+      }
+    });
+  });
+
+  app.delete('/deleteFolder', async (req, res) => {
+    const folder = req.headers.folder;
+    const subfolder = req.headers.subfolder;
+    console.log('deleting folder', folder, subfolder);
+  
+    try {
+      const result = await deleteFolder(folder, subfolder);
+      res.json({ success: true, message: result });
+    } catch (error) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  });
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
