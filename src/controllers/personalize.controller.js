@@ -18,7 +18,7 @@ class Personalize {
         await db.execute('DELETE FROM preferences WHERE user_id = ?', [user_id]);
 
         if (new_category_ids.length > 0) {
-            const values = new_category_ids.map(category_id => `(${user_id}, ${category_id})`).join(',');
+            const values = new_category_ids.map(category_id => `('${user_id}', ${category_id})`).join(',');
             const sql = `INSERT INTO preferences (user_id, category_id) VALUES ${values}`;
             await db.execute(sql);
         }
@@ -46,5 +46,5 @@ exports.updatePreferences = async (req, res, next) => {
         res.status(200).json({ message: 'Preferences updated successfully' });
     } catch (error) {
         next(error);
-    }
+}
 }

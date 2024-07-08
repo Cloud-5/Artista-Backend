@@ -1,4 +1,5 @@
 const db = require("../utils/database");
+const artistUploadArtworks=require('../services/artist-upload-artwork.service');
 
 class ArtistPortfolio {
   static fetchArtistDetails(artistId) {
@@ -8,6 +9,7 @@ class ArtistPortfolio {
         u.description AS artist_description,
         u.registered_at AS joined_date,
         u.location AS artist_location,
+        u.profession AS artist_profession,
         COUNT(DISTINCT al.artwork_id) AS total_likes,
         COUNT(DISTINCT af.follower_user_id) AS total_followers,
         COUNT(DISTINCT a.artwork_id) AS total_creations,
@@ -17,7 +19,8 @@ class ArtistPortfolio {
         CASE 
           WHEN afollower.followed_artist_user_id IS NOT NULL THEN 1 
           ELSE 0 
-        END AS is_following
+        END AS is_following,
+        AVG(ar.rating_value) AS average_rating
       FROM
         user u
       LEFT JOIN
@@ -28,6 +31,8 @@ class ArtistPortfolio {
         artwork a ON u.user_id = a.artist_id
       LEFT JOIN 
         artist_follower afollower ON u.user_id = afollower.followed_artist_user_id AND afollower.follower_user_id = ?
+      LEFT JOIN
+        artist_rating ar ON u.user_id = ar.rated_user_id
       WHERE
         u.user_id = ?
       GROUP BY
@@ -35,6 +40,7 @@ class ArtistPortfolio {
       [artistId, artistId]
     );
   }
+  
 
   static insertFeedback(artistId, feedback, customerId) {
     return db.execute(
@@ -127,4 +133,6 @@ exports.unfollowArtist = async (req, res, next) => {
       next(error);
   }
 };
+
+
 

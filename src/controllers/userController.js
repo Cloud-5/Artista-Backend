@@ -4,9 +4,9 @@ const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
-const admin = require('../config/firebaseAdmin');
+const { admin, firestore }= require('../config/firebaseAdmin');
 const axios = require('axios');
-const { v4: uuidv4 } = require('uuid');
+
 schema
     .is().min(8)
     .is().max(100)
@@ -14,16 +14,15 @@ schema
     .has().lowercase(1)
     .has().digits(1)
     .has().symbols(1);
-
-
-
-    
+  
     exports.signup = async (req, res) => {
       console.log(req.body);
       try {
         const user = req.body.user;
-
-        user.user_id = uuidv4();
+        const role = user.role;
+      
+         // Generate the new user ID
+        user.user_id = await userService.generateNewUserId(role);
         
         const existingUser = await userService.checkExistingEmail(user.email);
     
@@ -44,14 +43,30 @@ schema
           email: user.email,
           password: req.body.user.password,
           displayName: `${user.fName} ${user.lName}`, // Assuming displayName is a combination of first and last names
+          
         });
-    
+      console.log(firebaseUser);
+
         // Set Firebase UID in user object
         user.firebase_uid = firebaseUser.uid;
-    
+
+
+//--------------------------------------------------------------------------------------------------------------------------------
+         // Save user to Firestore
+
+         await firestore.collection('users').doc(user.firebase_uid).set({
+        email: user.email,
+        fName: user.fName,
+        lName: user.lName,
+        displayName: `${user.fName} ${user.lName}`,
+        firebase_uid: firebaseUser.uid
+
+       });
+   //-------------------------------------------------------------------------------------------------------------------------------- 
         // Log user object to ensure all fields are populated
-        console.log('User object before saving to database:', user);
+        //console.log('User object before saving to database:', user);
     
+        
         // Save user to database
         await userService.createUser(user);
 
@@ -59,7 +74,7 @@ schema
 
         return res.status(201).json({ message: "Successfully Registered" });
       } catch (error) {
-        console.error('Error during signup:', error);
+        //console.error('Error during signup:', error);
         return res.status(500).json({ error: error.message });
       }
     };
@@ -74,7 +89,7 @@ schema
         const secretKey = process.env.RECAPTCHA_SECRET_KEY;
         const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
         const recaptchaResponse = await axios.post(recaptchaUrl);
-        console.log(recaptchaResponse.data);
+        //console.log(recaptchaResponse.data);
         const recaptchaData = recaptchaResponse.data;
     
         if (!recaptchaData.success) {
@@ -82,7 +97,7 @@ schema
         }
 
         const user = await userService.loginUser(email);
-        console.log(user);
+        //console.log(user);
     
         if (user[0][0].length === 0) {
           return res.status(404).json({ message: "Invalid Credentials" });
@@ -101,7 +116,7 @@ schema
       
         return res.status(200).json({ message: "Successful Login", accessToken: accessToken , data: user[0][0] });
       } catch (error) {
-        console.error('Error fetching user:', error);
+        //console.error('Error fetching user:', error);
       
         return res.status(500).json({ error: error.message });
       }
@@ -151,7 +166,7 @@ schema
 exports.resetPassword = async (req, res) => {
   const { email, password, confirmPassword } = req.body;
 
-  console.log(email, password, confirmPassword);
+  //console.log(email, password, confirmPassword);
 
   if (!email || !password || !confirmPassword) {
     return res.status(400).json({ success: false, msg: "Please fill in all the fields" });
@@ -223,6 +238,6 @@ exports.changePassword = async (req, res) => {
       return res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
       console.error('Error changing password:', error);
-      return res.status(500).json({ message: "Internal server error" });
-  }
+      return res.status(500).json({ message: "Internal server error" });
+}
 };

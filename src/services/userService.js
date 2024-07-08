@@ -11,7 +11,7 @@ exports.createUser = async (user) => {
   console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
   
-  const sql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, is_approved, firebase_uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+  const sql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role,registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
   console.log("Query hit!!");
   
   // Log user details to ensure no undefined values
@@ -29,7 +29,7 @@ exports.createUser = async (user) => {
   });
 
   try {
-      const result = await db.execute(sql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, status, user.firebase_uid]);
+      const result = await db.execute(sql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role,user.registered_at, status, user.firebase_uid]);
       console.log("User created successfully:", result);
       return result;
   } catch (error) {
@@ -140,3 +140,24 @@ exports.updateUserPassword = (password, email) => {
   return db.execute(sql, [password, email]);
 
 }
+
+exports.getHighestUserIdByRole = async (rolePrefix) => {
+  const sql = `SELECT user_id FROM user WHERE user_id LIKE '${rolePrefix}%' ORDER BY user_id DESC LIMIT 1`;
+  const [rows, fields] = await db.execute(sql);
+  return rows.length > 0 ? rows[0].user_id : null;
+};
+
+exports.generateNewUserId = async (role) => {
+  const rolePrefix = role === 'artist' ? 'Ar' : 'Cu';
+  const highestUserId = await this.getHighestUserIdByRole(rolePrefix);
+  
+  if (!highestUserId) {
+    return `${rolePrefix}-00001`;
+  }
+
+  const userIdNumber = parseInt(highestUserId.split('-')[1]);
+  const newUserIdNumber = userIdNumber + 1;
+  const newUserId = `${rolePrefix}-${newUserIdNumber.toString().padStart(5, '0')}`;
+
+  return newUserId;
+};
