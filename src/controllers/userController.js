@@ -4,11 +4,9 @@ const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const schema = new passwordValidator();
 const tokengenerator = require('../config/createToken');
-const admin = require('../config/firebaseAdmin');
+const { admin, firestore }= require('../config/firebaseAdmin');
 const axios = require('axios');
-// const { v4: uuidv4 } = require('uuid');
-// const { Firestore } = require('@google-cloud/firestore');
-// const firestore = new Firestore();
+
 schema
     .is().min(8)
     .is().max(100)
@@ -16,10 +14,7 @@ schema
     .has().lowercase(1)
     .has().digits(1)
     .has().symbols(1);
-
-
-
-    
+  
     exports.signup = async (req, res) => {
       console.log(req.body);
       try {
@@ -50,27 +45,28 @@ schema
           displayName: `${user.fName} ${user.lName}`, // Assuming displayName is a combination of first and last names
           
         });
-      
+      console.log(firebaseUser);
+
         // Set Firebase UID in user object
         user.firebase_uid = firebaseUser.uid;
+
+
 //--------------------------------------------------------------------------------------------------------------------------------
          // Save user to Firestore
 
-      //    await firestore.collection('users').doc(firebaseUser.uid).set({
-      //     email: user.email,
-      //     fName: user.fName,
-      //     lName: user.lName,
-      //     dob: user.dob,
-      //     location: user.location,
-      //     role: user.role,
-      //     is_approved: user.role === 'artist' ? 0 : 1,
-      //     firebase_uid: firebaseUser.uid
+         await firestore.collection('users').doc(user.firebase_uid).set({
+        email: user.email,
+        fName: user.fName,
+        lName: user.lName,
+        displayName: `${user.fName} ${user.lName}`,
+        firebase_uid: firebaseUser.uid
 
-      // });
+       });
    //-------------------------------------------------------------------------------------------------------------------------------- 
         // Log user object to ensure all fields are populated
         //console.log('User object before saving to database:', user);
     
+        
         // Save user to database
         await userService.createUser(user);
 
