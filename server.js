@@ -57,24 +57,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/upload', upload.single('image'), (req, res) => {
-    res.json({ image: req.file });
-});
-
-app.delete('/delete/:key', (req, res) => {
-    const key = req.params.key;
-    console.log('key', key)
-
-    deleteFromS3(key, (err, data) => {
-        if (err) {
-            res.status(500).json({ error: 'Failed to delete object from S3' });
-        } else {
-            res.status(200).json({ message: 'Object deleted successfully' });
-        }
-    });
-});
-
-
 app.use('/user', userRoutes);
 
 app.use('/artwork', artworkRouter);
