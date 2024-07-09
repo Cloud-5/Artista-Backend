@@ -9,6 +9,8 @@ class FeedbackList {
             SELECT 
                 u.profile_photo_url,
                 u.username AS customer_name,
+                 u.fName,
+                 u.LName,
                 f.content AS feedback_content,
                 f.created_at AS timestamp
             FROM 
