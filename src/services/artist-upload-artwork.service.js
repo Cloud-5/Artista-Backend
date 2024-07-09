@@ -24,5 +24,9 @@ class ArtCategoriesFormats {
     }
 }
 
-module.exports = {ArtCategories,ArtCategoriesFormats};
+class UploadArtwork {
+    // static upload2DArt()
+}
+
+module.exports = {ArtCategories,ArtCategoriesFormats,UploadArtwork};
 
