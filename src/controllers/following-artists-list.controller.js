@@ -2,6 +2,7 @@ const FollowingArtistsList  = require('../services/following-artists-list.servic
 
 exports.getFollowedArtistsList = async (req, res, next) => {
     const userId = req.params.userId;
+    console.log('Received userId:', userId);
     try {
         const followedArtists = await FollowingArtistsList.getFollowedArtists(userId);
         res.status(200).json(followedArtists);
