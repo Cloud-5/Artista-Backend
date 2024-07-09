@@ -6,6 +6,8 @@ class ArtistPortfolio {
     return db.execute(
       `SELECT
         u.username AS artist_name,
+        u.fName,
+        u.LName,
         u.description AS artist_description,
         u.registered_at AS joined_date,
         u.location AS artist_location,
