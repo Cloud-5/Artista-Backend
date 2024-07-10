@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 
 //buddhi
 const artworkPreviewRouter = require('./src/routes/artwork-preview.routes');
@@ -45,6 +47,7 @@ const { uploadFiles, getGltfFile,deleteFolder  } = require('./src/middlewares/fo
 
 
 const app = express();
+app.use(cors());
 
 const port = process.env.PORT || 3000;
 
