@@ -16,7 +16,8 @@ schema
     .has().symbols(1);
   
     exports.signup = async (req, res) => {
-      console.log(req.body);
+      console.log('req body in controller',req.body);
+      console.log('platforms',req.body.user.platform);
       try {
         const user = req.body.user;
         const role = user.role;
@@ -50,8 +51,6 @@ schema
         // Set Firebase UID in user object
         user.firebase_uid = firebaseUser.uid;
 
-
-//--------------------------------------------------------------------------------------------------------------------------------
          // Save user to Firestore
 
          await firestore.collection('users').doc(user.firebase_uid).set({
@@ -62,16 +61,13 @@ schema
         firebase_uid: firebaseUser.uid
 
        });
-   //-------------------------------------------------------------------------------------------------------------------------------- 
-        // Log user object to ensure all fields are populated
-        //console.log('User object before saving to database:', user);
-    
         
         // Save user to database
+        console.log('platforms',user.platforms);
         await userService.createUser(user);
-
-        await userService.verificationEmail(user.email);
-
+         console.log( 'user',user)
+        await userService.verificationEmail(user.email);   
+         console.log('UserEmail',user.email)
         return res.status(201).json({ message: "Successfully Registered" });
       } catch (error) {
         //console.error('Error during signup:', error);
@@ -79,7 +75,17 @@ schema
       }
     };
     
-
+    exports.getPlatforms = async (req, res) => {
+      try {
+          const platforms = await userService.getPlatforms();
+          res.status(200).json(platforms[0]);
+      } catch (error) {
+          console.error("Error fetching platforms:", error);
+          res.status(500).send('Server Error');
+      }
+  };
+  
+  
 
 
     exports.login = async (req, res) => {
