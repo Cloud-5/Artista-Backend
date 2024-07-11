@@ -10,11 +10,11 @@ exports.checkExistingEmail = (email) => {
 exports.createUser = async (user) => {
   console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
-  
-  const sql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role,registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+
+  const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const platformSql = "INSERT INTO social_accounts(user_id, platform_id, account_url) VALUES ?";
+
   console.log("Query hit!!");
-  
-  // Log user details to ensure no undefined values
   console.log('User details:', {
     username: user.username,
     email: user.email,
@@ -29,12 +29,21 @@ exports.createUser = async (user) => {
   });
 
   try {
-      const result = await db.execute(sql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role,user.registered_at, status, user.firebase_uid]);
-      console.log("User created successfully:", result);
-      return result;
+    // Insert user details
+    const userResult = await db.execute(userSql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid]);
+    console.log("User created successfully:", userResult);
+
+    // If the user is an artist, insert their platform URLs
+    if (user.role === 'artist' && user.platforms && user.platforms.length > 0) {
+      const platformValues = user.platforms.map(platform => [user.user_id, platform.id, platform.url]);
+      const platformResult = await db.query(platformSql, [platformValues]);
+      console.log("User platforms created successfully:", platformResult);
+    }
+
+    return userResult;
   } catch (error) {
-      console.error("Error creating user:", error);
-      throw error; // Re-throw the error to be handled by the caller
+    console.error("Error creating user:", error);
+    throw error; // Re-throw the error to be handled by the caller
   }
 };
 
@@ -160,4 +169,16 @@ exports.generateNewUserId = async (role) => {
   const newUserId = `${rolePrefix}-${newUserIdNumber.toString().padStart(5, '0')}`;
 
   return newUserId;
+};
+
+
+
+exports.getPlatforms = async () => {
+  try {
+      const platforms = await db.query('SELECT id,platform_name,logo_url FROM social_media_platforms'); // Adjust the query according to your DB structure
+      return platforms;
+  } catch (error) {
+      console.error("Error fetching platforms:", error);
+      throw new Error("Failed to fetch platforms");
+  }
 };

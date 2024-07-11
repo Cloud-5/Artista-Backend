@@ -15,6 +15,7 @@ const upload = multer({
     storage: multerS3({
       s3,
       bucket: process.env.AWS_BUCKET_NAME,
+    
       key: function (req, file, cb) {
         console.log('req body', req);
         const folder = req.headers.folder;

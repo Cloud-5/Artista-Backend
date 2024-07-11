@@ -8,8 +8,9 @@ router.post('/login', userController.login);
 router.post('/forgotPasword', userController.forgotPasword);
 router.post('/resetPassword', userController.resetPassword);
 router.post('/changePassword', userController.changePassword);
-
+router.get('/platforms',userController.getPlatforms);
 
 
 
 module.exports = router;
+   
