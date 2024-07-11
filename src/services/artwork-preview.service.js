@@ -17,7 +17,7 @@ class ArtPreview {
         GROUP_CONCAT(DISTINCT ato.tool_name) AS tools,
         GROUP_CONCAT(DISTINCT af.file_format_name) AS formats,
         GROUP_CONCAT(DISTINCT atg.tag_name) AS tags,
-        a.thumbnail_url AS url_link,
+        a.original_url AS url_link,
         COUNT(DISTINCT a2.artwork_id) AS total_creations,
         AVG(ar.rating_value) AS avg_rating,
         COUNT(DISTINCT afollower.follower_user_id) AS followers_count,
