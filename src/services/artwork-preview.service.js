@@ -69,7 +69,6 @@ class ArtPreview {
         a.artwork_id = ?
     GROUP BY 
         a.artwork_id;
-    
     `,
       [userId, userId, userId, artId]
     );
@@ -100,7 +99,7 @@ class ArtPreview {
       FROM comment 
       GROUP BY artwork_id) c ON a.artwork_id = c.artwork_id
     WHERE 
-      a.artist_id = ?
+      a.artist_id = ? AND a.availability = 1
     ORDER BY 
       score DESC
     LIMIT 10;`,

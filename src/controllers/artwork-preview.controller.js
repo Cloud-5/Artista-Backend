@@ -12,7 +12,9 @@ exports.artworkPreview = async (req, res, next) => {
     }
     try {
         const artworkDetails = await ArtPreview.getArtDetails(artId, userId);
+        console.log('artworkdetaks',artworkDetails);
         const comments = await ArtPreview.getComments(artId);
+        console.log('comments',comments);
         const artistId = artworkDetails[0][0].artist_id;
         const bestArtworks = await ArtPreview.getBestArtworks(artistId);
         const relatedArtworks = await ArtPreview.getRelatedArtworks(artId);
@@ -23,6 +25,7 @@ exports.artworkPreview = async (req, res, next) => {
             relatedArtworks: relatedArtworks[0]
         };
         res.status(200).json(responseData);
+        console.log('response',responseData);
     } catch (error) {
         return res.status(400).json({ error: 'Error getting artwork details' });
     }
