@@ -18,7 +18,7 @@ class notificationServices {
 
   static getNotificationById = async (notificationId) => {
     const data = await db.query("SELECT * FROM notifications WHERE notification_id=?", [notificationId]);
-    return data[0];
+    return data;
   };
 
   static createNotification = async (notification) => {
