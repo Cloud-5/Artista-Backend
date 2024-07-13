@@ -68,7 +68,30 @@ class Cart {
     return db.execute('DELETE FROM cart WHERE user_id = ?', [userId]);
 }
 
-  
+static async likeArtwork(userId, artworkId) {
+  try {
+    const [rows] = await db.execute('SELECT * FROM artwork_like WHERE user_id = ? AND artwork_id = ?', [userId, artworkId]);
+    if (rows.length === 0) {
+      const likeQuery = `INSERT INTO artwork_like (user_id, artwork_id, liked_at) VALUES (?, ?, NOW())`;
+      await db.execute(likeQuery, [userId, artworkId]);
+    } else {
+      const unlikeQuery = `DELETE FROM artwork_like WHERE user_id = ? AND artwork_id = ?`;
+      await db.execute(unlikeQuery, [userId, artworkId]);
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+static async getTotalLikes(artworkId) {
+  const [totalLikesRows] = await db.execute('SELECT COUNT(*) AS total_likes FROM artwork_like WHERE artwork_id = ?', [artworkId]);
+  return totalLikesRows[0].total_likes;
+}
+
+static async getLikedStatus(userId, artworkId) {
+  const [rows] = await db.execute('SELECT * FROM artwork_like WHERE user_id = ? AND artwork_id = ?', [userId, artworkId]);
+  return rows.length > 0;
+}
 
 }
 
@@ -134,6 +157,45 @@ exports.clearCart = async (req, res, next) => {
     const userId = req.body.userId;
     await Cart.clearCart(userId);
     res.status(200).json({ message: 'Cart cleared' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.likeArtwork = async (req, res, next) => {
+  try {
+    const { userId, artworkId } = req.body;
+
+    // Call the Cart method to like artwork
+    await Cart.likeArtwork(userId, artworkId);
+
+    // Get the updated total likes for the artwork
+    const totalLikes = await Cart.getTotalLikes(artworkId);
+
+    res.status(200).json({ message: 'Artwork like status updated successfully', total_likes: totalLikes });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getLikedStatus = async (req, res, next) => {
+  try {
+    const { userId, artworkId } = req.body;
+
+    // Call the Cart method to get liked status
+    const likedStatus = await Cart.getLikedStatus(userId, artworkId);
+
+    res.status(200).json({ liked: likedStatus });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getTotalLikes = async (req, res, next) => {
+  try {
+    const artworkId = req.params.artworkId;
+    const totalLikes = await Cart.getTotalLikes(artworkId);
+    res.status(200).json({ total_likes: totalLikes });
   } catch (error) {
     next(error);
   }
