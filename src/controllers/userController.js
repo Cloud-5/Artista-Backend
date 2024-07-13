@@ -145,7 +145,7 @@ schema
           try {
             // console.log("Here")
             const token = tokengenerator({ email: existingUser[0][0].email });
-            // console.log(token)
+            console.log('=================================',token)
           
             //const link = "http://" + req.hostname + ":4200/new?token=" + token;
             const link = `http://${req.hostname}:4200/new?email=${encodeURIComponent(email)}&token=${token}`;
