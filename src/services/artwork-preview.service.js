@@ -17,7 +17,9 @@ class ArtPreview {
         GROUP_CONCAT(DISTINCT ato.tool_name) AS tools,
         GROUP_CONCAT(DISTINCT af.file_format_name) AS formats,
         GROUP_CONCAT(DISTINCT atg.tag_name) AS tags,
-        a.thumbnail_url AS url_link,
+        a.original_url AS url_link,
+        a.modelBackground As background,
+        a.thumbnail_url AS thumbnail,
         COUNT(DISTINCT a2.artwork_id) AS total_creations,
         AVG(ar.rating_value) AS avg_rating,
         COUNT(DISTINCT afollower.follower_user_id) AS followers_count,
@@ -67,7 +69,6 @@ class ArtPreview {
         a.artwork_id = ?
     GROUP BY 
         a.artwork_id;
-    
     `,
       [userId, userId, userId, artId]
     );
@@ -98,7 +99,7 @@ class ArtPreview {
       FROM comment 
       GROUP BY artwork_id) c ON a.artwork_id = c.artwork_id
     WHERE 
-      a.artist_id = ?
+      a.artist_id = ? AND a.availability = 1
     ORDER BY 
       score DESC
     LIMIT 10;`,
