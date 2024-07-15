@@ -13,7 +13,7 @@ class Foryou {
           SELECT category_id
           FROM preferences
           WHERE user_id = '${userId}'
-        )
+        ) AND a.availability = 1
       `;
       const [totalCountRows] = await db.execute(totalCountQuery);
       const totalItems = totalCountRows[0].total;
@@ -46,7 +46,7 @@ class Foryou {
         SELECT category_id
         FROM preferences
         WHERE user_id = '${userId}'
-      )
+      ) AND a.availability = 1
     GROUP BY 
       a.artwork_id
     ORDER BY trending_score DESC, a.artwork_id
@@ -59,6 +59,8 @@ class Foryou {
       throw error;
     }
   }
+
+  
 }
 
 exports.fetchAll = async (req, res, next) => {
@@ -78,3 +80,4 @@ exports.fetchAll = async (req, res, next) => {
   } catch (error) {
     next(error);}
 };
+

@@ -42,6 +42,9 @@ const artistNewHomeRouter=require('./src/routes/artist-new-home.routes');
 const artistUploadArtworks=require('./src/routes/artist-upload-artwork.routes');
 
 
+
+const notificationRoutes = require('./src/routes/notification.routes');
+
 const {upload, deleteFromS3} = require('./src/middlewares/file-upload');
 const { uploadFiles, getGltfFile,deleteFolder  } = require('./src/middlewares/folder-upload');
 
@@ -103,6 +106,7 @@ app.use('/artist-followers',artistFollowersRouter);
 app.use('/artist-edit', artistEditRouter);
 app.use('/artist-new-home',artistNewHomeRouter);
 app.use('/artist-upload-artworks', artistUploadArtworks);
+app.use('/notifications',  notificationRoutes);
 
 
 app.post('/upload', (req, res) => {

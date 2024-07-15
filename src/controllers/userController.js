@@ -16,8 +16,8 @@ schema
     .has().symbols(1);
   
     exports.signup = async (req, res) => {
-      console.log('req body in controller',req.body);
-      console.log('platforms',req.body.user.platform);
+     // console.log('req body in controller',req.body);
+      //console.log('platforms',req.body.user.platform);
       try {
         const user = req.body.user;
         const role = user.role;
@@ -46,7 +46,7 @@ schema
           displayName: `${user.fName} ${user.lName}`, // Assuming displayName is a combination of first and last names
           
         });
-      console.log(firebaseUser);
+      //console.log(firebaseUser);
 
         // Set Firebase UID in user object
         user.firebase_uid = firebaseUser.uid;
@@ -63,11 +63,11 @@ schema
        });
         
         // Save user to database
-        console.log('platforms',user.platforms);
+       // console.log('platforms',user.platforms);
         await userService.createUser(user);
-         console.log( 'user',user)
+       //  console.log( 'user',user)
         await userService.verificationEmail(user.email);   
-         console.log('UserEmail',user.email)
+       //  console.log('UserEmail',user.email)
         return res.status(201).json({ message: "Successfully Registered" });
       } catch (error) {
         //console.error('Error during signup:', error);
@@ -145,7 +145,7 @@ schema
           try {
             // console.log("Here")
             const token = tokengenerator({ email: existingUser[0][0].email });
-            // console.log(token)
+         //   console.log('=================================',token)
           
             //const link = "http://" + req.hostname + ":4200/new?token=" + token;
             const link = `http://${req.hostname}:4200/new?email=${encodeURIComponent(email)}&token=${token}`;
@@ -217,7 +217,7 @@ exports.resetPassword = async (req, res) => {
 exports.changePassword = async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
 
-  console.log(email, oldPassword, newPassword);
+ // console.log(email, oldPassword, newPassword);
 
   try {
       const user = await userService.getUserByEmail(email);
@@ -227,7 +227,7 @@ exports.changePassword = async (req, res) => {
       }
 
       const validPassword = await bcrypt.compare(oldPassword, user[0][0].password_hash);
-      console.log(validPassword)
+//   console.log(validPassword)
       if (!validPassword) {
           return res.status(400).json({ message: "Invalid old password" });
       }
@@ -238,7 +238,7 @@ exports.changePassword = async (req, res) => {
 
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-      console.log(hashedNewPassword)
+   //   console.log(hashedNewPassword)
 
       await userService.updateUserPassword(hashedNewPassword, email);
       return res.status(200).json({ message: "Password changed successfully" });
