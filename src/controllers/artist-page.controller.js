@@ -9,7 +9,10 @@ class Artistpage {
                    (SELECT AVG(rating_value) FROM artist_rating WHERE rated_user_id = user.user_id) AS rating,
                    (SELECT COUNT(follower_user_id) FROM artist_follower WHERE followed_artist_user_id = user.user_id) AS follower_count
             FROM user 
-            WHERE role = "artist"`;
+            WHERE role = "artist"
+            AND isActive = 1
+            AND isBanned = 0
+            AND is_approved = 1`;
 
         if (searchKeyword) {
             query += ` AND (username LIKE '%${searchKeyword}%' OR fName LIKE '%${searchKeyword}%' OR LName LIKE '%${searchKeyword}%'  OR profession LIKE '%${searchKeyword}%' OR location LIKE '%${searchKeyword}%')`;
@@ -44,7 +47,7 @@ class Artistpage {
         return db.execute(`
         SELECT DISTINCT location 
         FROM user
-        WHERE role = 'artist' AND location IS NOT NULL AND location != '';
+        WHERE role = 'artist' AND location IS NOT NULL AND location != ''  AND isActive = 1 AND isBanned = 0 AND is_approved = 1;
         
         `);
     }

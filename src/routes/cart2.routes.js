@@ -11,5 +11,8 @@ router.delete('/clear', cart2Controller.clearCart);
 
 router.post('/increment', cart2Controller.incrementQuantity);
 router.post('/decrement', cart2Controller.decrementQuantity);
+router.post('/like', cart2Controller.likeArtwork);
+router.post('/liked-status', cart2Controller.getLikedStatus);
+router.get('/total-likes/:artworkId', cart2Controller.getTotalLikes); 
 
 module.exports = router;
