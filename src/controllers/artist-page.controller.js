@@ -6,7 +6,7 @@ class Artistpage {
         let query = `
             SELECT user.*, 
                    (SELECT COUNT(artwork_id) FROM artwork WHERE artist_id = user.user_id) AS total_creations, 
-                   (SELECT AVG(rating_value) FROM artist_rating WHERE rated_user_id = user.user_id) AS rating,
+                   COALESCE((SELECT AVG(rating_value) FROM artist_rating WHERE rated_user_id = user.user_id), 0) AS rating,
                    (SELECT COUNT(follower_user_id) FROM artist_follower WHERE followed_artist_user_id = user.user_id) AS follower_count
             FROM user 
             WHERE role = "artist"
