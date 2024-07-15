@@ -4,7 +4,18 @@ const artistedit =require('../services/artist-edit.service.js')
 
 
 
-
+exports.getSocialMediaPlatforms = async(req,res)=>{
+  try{
+    const platforms = await artistedit.getSocialMeduaPlatforms();
+    console.log('Platforms:',platforms);
+    res.status(200).json(platforms[0]);
+    
+    
+  }
+  catch(error){
+    res.status(500).json({error: 'field to get social media platforms.'})
+  }
+}
 
 
 exports.getArtistDetails = async (req, res, next) => {
@@ -21,7 +32,18 @@ exports.getArtistDetails = async (req, res, next) => {
   }
 };
 
+exports.updateSocialMediaLink =async(req,res)=>{
+  const { userId } = req.params;
+  const { platform_id, account_url } = req.body;
 
+  artistController.updateSocialMediaLink(userId, platform_id, account_url)
+    .then(result => {
+      res.json({ message: 'Social media link updated successfully.' });
+    })
+    .catch(error => {
+      res.status(500).json({ error: 'Failed to update social media link.' });
+    });
+}
 
 
   exports.updateArtist = async (req, res) => {
@@ -46,7 +68,7 @@ exports.getArtistDetails = async (req, res, next) => {
 exports.getAllArtistData = async (req, res, next) => {
   try {
     const artists = await artistedit.getAllArtistData();
-
+console.log('Artists details get succesfully:',artists);
     res.status(200).json(artists);
   } catch (error) {
     console.error("Error fetching artist data:", error);
@@ -59,26 +81,26 @@ exports.getAllArtistData = async (req, res, next) => {
 
 
 
-exports.deleteAccount = async (req, res, next) => {
-  const userId = req.params.userId;
+// exports.deleteAccount = async (req, res, next) => {
+//   const userId = req.params.userId;
 
-  try {
-    await artistedit.deleteArtist(userId);
-    res.status(200).json({ message: "Account deleted successfully!" });
-  } catch (error) {
-    console.error("Error deleting account:", error);
-    next(error);
-  }
-};
+//   try {
+//     await artistedit.deleteArtist(userId);
+//     res.status(200).json({ message: "Account deleted successfully!" });
+//   } catch (error) {
+//     console.error("Error deleting account:", error);
+//     next(error);
+//   }
+// };
 
 
-exports.getFollowers = async (req, res, next) => {
-  const userId = req.params.userId;
-  try {
-    const followers = await artistedit.getFollowers(userId);
-    res.status(200).json(followers[0]);
-  } catch (error) {
-    console.error("Error getting followers:", error);
-    next(error);
-  }
-};
+// exports.getFollowers = async (req, res, next) => {
+//   const userId = req.params.userId;
+//   try {
+//     const followers = await artistedit.getFollowers(userId);
+//     res.status(200).json(followers[0]);
+//   } catch (error) {
+//     console.error("Error getting followers:", error);
+//     next(error);
+//   }
+// };
