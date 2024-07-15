@@ -215,7 +215,7 @@ exports.resetPassword = async (req, res) => {
 
 
 exports.changePassword = async (req, res) => {
-  const { email, oldPassword, newPassword } = req.body;
+  const { email, oldPassword, newPassword,confirmPassword } = req.body;
 
  // console.log(email, oldPassword, newPassword);
 
@@ -235,7 +235,9 @@ exports.changePassword = async (req, res) => {
       if (!schema.validate(newPassword)) {
           return res.status(400).json({ message: "Password must at least contain 8 characters, uppercase letters, lowercase letters, digits, and special characters!" });
       }
-
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ success: false, msg: "Passwords do not match" });
+      }
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
    //   console.log(hashedNewPassword)
