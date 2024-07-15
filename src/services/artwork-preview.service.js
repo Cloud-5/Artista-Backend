@@ -10,6 +10,7 @@ class ArtPreview {
     u.location AS location,
     u.user_id AS artist_id,
     c.name AS category,
+    c.category_id AS category_id,
     a.price AS price,
     a.published_date AS published_date,
     COALESCE(al.total_likes, 0) AS total_likes,
