@@ -11,7 +11,7 @@ exports.createUser = async (user) => {
   //console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
 
-  const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid,profession,description) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
   const platformSql = "INSERT INTO social_accounts(user_id, platform_id, account_url) VALUES ?";
 
  // console.log("Query hit!!");
@@ -30,7 +30,7 @@ exports.createUser = async (user) => {
 
   try {
     // Insert user details
-    const userResult = await db.execute(userSql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid]);
+    const userResult = await db.execute(userSql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid,user.profession,user.description]);
     console.log("User created successfully:", userResult);
 
     // If the user is an artist, insert their platform URLs
