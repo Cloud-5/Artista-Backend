@@ -10,7 +10,8 @@ class EditCustomerProfile {
     description,
     email,
     newPassword,
-    location
+    location,
+    phone
   ) {
     return db.execute(
       `
@@ -25,10 +26,11 @@ class EditCustomerProfile {
                 email = ?,
                 password_hash = ?,
                 location = ?
+                phone = ?
             WHERE 
                 user_id = ?
             `,
-      [banner_img_url,profile_photo_url,firstName, lastName, description, email, newPassword, location, userId]
+      [banner_img_url,profile_photo_url,firstName, lastName, description, email, newPassword, location,phone, userId]
     );
   }
 
@@ -40,7 +42,8 @@ class EditCustomerProfile {
     lastName,
     description,
     email,
-    location
+    location,
+    phone
   ) {
     return db.execute(
       `
@@ -54,10 +57,11 @@ class EditCustomerProfile {
                 description = ?,
                 email = ?,
                 location = ?
+                phone = ?
             WHERE 
                 user_id = ?
             `,
-      [banner_img_url,profile_photo_url,firstName, lastName, description, email, location, userId]
+      [banner_img_url,profile_photo_url,firstName, lastName, description, email, location, phone, userId]
     );
   }
 }
