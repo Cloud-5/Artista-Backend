@@ -8,25 +8,25 @@ exports.checkExistingEmail = (email) => {
 };
 
 exports.createUser = async (user) => {
-  console.log("Create user hit!!");
+  //console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
 
   const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   const platformSql = "INSERT INTO social_accounts(user_id, platform_id, account_url) VALUES ?";
 
-  console.log("Query hit!!");
-  console.log('User details:', {
-    username: user.username,
-    email: user.email,
-    password: user.password,
-    fName: user.fName,
-    lName: user.lName,
-    dob: user.dob,
-    location: user.location,
-    role: user.role,
-    status,
-    firebase_uid: user.firebase_uid
-  });
+ // console.log("Query hit!!");
+  // console.log('User details:', {
+  //   username: user.username,
+  //   email: user.email,
+  //   password: user.password,
+  //   fName: user.fName,
+  //   lName: user.lName,
+  //   dob: user.dob,
+  //   location: user.location,
+  //   role: user.role,
+  //   status,
+  //   firebase_uid: user.firebase_uid
+  // });
 
   try {
     // Insert user details
@@ -47,12 +47,11 @@ exports.createUser = async (user) => {
   }
 };
 
-
-
 exports.loginUser = (email) => {
     const sql = "SELECT user_id, email, password_hash, role, is_approved,firebase_uid FROM user WHERE email=?"
     return db.execute(sql, [email])
 }
+
 exports.forgotPasword = async (email,link) => {
     let error= false;
     try {
@@ -104,6 +103,7 @@ exports.sendForgotPasswordEmail = async (senderAddress, link) => {
   
     return error;
   };
+
   exports.getUserByEmail = (email) => {
     const sql = "SELECT * FROM user WHERE email=?";
     return db.execute(sql, [email]);
@@ -119,7 +119,6 @@ exports.checkUserId = async (user_id) => {
   }
 };
 
-
 exports.checkEmail = async (email) => {
   try {
     const [rows, fields] = await db.execute('SELECT * FROM user WHERE email = ?', [email]);
@@ -129,7 +128,6 @@ exports.checkEmail = async (email) => {
     throw err;
   }
 };
-
 
 exports.updatePassword = async (hashedPassword, email) => {
   if (!hashedPassword || !email) {
@@ -170,8 +168,6 @@ exports.generateNewUserId = async (role) => {
 
   return newUserId;
 };
-
-
 
 exports.getPlatforms = async () => {
   try {
