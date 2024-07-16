@@ -7,7 +7,8 @@ class Artist {
             SELECT 
  af.followed_artist_user_id, 
 CONCAT(u.fName, ' ', u.LName) AS artist_name,
- COUNT(follower_user_id) AS total_followers,
+ COUNT( DISTINCT follower_user_id) AS total_followers,
+ 
  u.profile_photo_url AS thumbnail_url,
  u.banner_img_url AS banner_url,
  u.profession  AS  artist_profession,
