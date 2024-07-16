@@ -88,24 +88,62 @@ schema
   
 
 
+    // exports.login = async (req, res) => {
+    //   try {
+    //     const { email, password , recaptchaToken } = req.body;
+    
+    //     const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    //     const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
+    //     const recaptchaResponse = await axios.post(recaptchaUrl);
+    //     //console.log(recaptchaResponse.data);
+    //     const recaptchaData = recaptchaResponse.data;
+    
+    //     if (!recaptchaData.success) {
+    //       return res.status(400).json({ message: 'reCAPTCHA verification failed' });
+    //     }
+
+    //     const user = await userService.loginUser(email);
+    //     //console.log(user);
+    
+    //     if (user[0][0].length === 0) {
+    //       return res.status(404).json({ message: "Invalid Credentials" });
+    //     }
+    
+    //     if (user[0][0].is_approved === 0) {
+    //       return res.status(403).json({ message: "Wait for Admin Approval" });
+    //     }
+    
+    //     // Get user UID from Firebase Authentication
+    //     const userRecord = await admin.auth().getUserByEmail(email);
+    //     const uid = userRecord.uid;
+    
+    //     const response = { email: email, role: user[0][0].role, uid: uid };
+    //     const accessToken = jwt.sign(response, process.env.JWT_SECRET, { expiresIn: '8h' });
+      
+    //     return res.status(200).json({ message: "Successful Login", accessToken: accessToken , data: user[0][0] });
+    //   } catch (error) {
+    //     //console.error('Error fetching user:', error);
+      
+    //     return res.status(500).json({ error: error.message });
+    //   }
+    // };
+
     exports.login = async (req, res) => {
       try {
-        const { email, password , recaptchaToken } = req.body;
+        const { email, password, recaptchaToken } = req.body;
     
         const secretKey = process.env.RECAPTCHA_SECRET_KEY;
         const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
         const recaptchaResponse = await axios.post(recaptchaUrl);
-        //console.log(recaptchaResponse.data);
         const recaptchaData = recaptchaResponse.data;
     
         if (!recaptchaData.success) {
           return res.status(400).json({ message: 'reCAPTCHA verification failed' });
         }
-
-        const user = await userService.loginUser(email);
-        //console.log(user);
     
-        if (user[0][0].length === 0) {
+        const user = await userService.loginUser(email);
+        console.log(user[0][0]);
+        if (!user[0] || !user[0][0]) {
           return res.status(404).json({ message: "Invalid Credentials" });
         }
     
@@ -113,21 +151,33 @@ schema
           return res.status(403).json({ message: "Wait for Admin Approval" });
         }
     
-        // Get user UID from Firebase Authentication
+
+        const storedPassword = user[0][0].password_hash;
+        console.log('dfxhfgjhhhhhhhhhhhhh',storedPassword)
+        if (!storedPassword) {
+          return res.status(500).json({ message: "Password not found in database." });
+        }
+            console.log( 'hhhhhhhhhhhhhhhhhhhhhh',password)
+    // const isPasswordValid = await bcrypt.compare(password, storedPassword);
+    const isPasswordValid = await bcrypt.compare(password.trim(), storedPassword);
+
+        console.log(isPasswordValid,'boolean valid')
+        if (!isPasswordValid) {
+          return res.status(400).json({ message: "Invalid Credentials" });
+        }
+    
         const userRecord = await admin.auth().getUserByEmail(email);
         const uid = userRecord.uid;
     
         const response = { email: email, role: user[0][0].role, uid: uid };
         const accessToken = jwt.sign(response, process.env.JWT_SECRET, { expiresIn: '8h' });
-      
-        return res.status(200).json({ message: "Successful Login", accessToken: accessToken , data: user[0][0] });
+    
+        return res.status(200).json({ message: "Successful Login", accessToken: accessToken, data: user[0][0] });
       } catch (error) {
-        //console.error('Error fetching user:', error);
-      
         return res.status(500).json({ error: error.message });
       }
     };
-
+    
 
 
     exports.forgotPasword = async (req, res) => {
@@ -235,7 +285,7 @@ exports.changePassword = async (req, res) => {
       if (!schema.validate(newPassword)) {
           return res.status(400).json({ message: "Password must at least contain 8 characters, uppercase letters, lowercase letters, digits, and special characters!" });
       }
-      if (newPassword !== confirmPassword) {
+      if (ne !== confirmPassword) {
         return res.status(400).json({ success: false, msg: "Passwords do not match" });
       }
       const salt = await bcrypt.genSalt(10);
