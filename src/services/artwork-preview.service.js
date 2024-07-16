@@ -7,6 +7,7 @@ class ArtPreview {
     a.title AS artwork_name,
     CONCAT(u.fName, ' ', u.LName) AS artist,
     u.profession AS profession,
+    u.firebase_uid AS firebase_uid,
     u.location AS location,
     u.user_id AS artist_id,
     c.name AS category,
@@ -23,7 +24,7 @@ class ArtPreview {
     a.thumbnail_url AS thumbnail,
     COUNT(DISTINCT a2.artwork_id) AS total_creations,
     COALESCE(AVG(ar.rating_value), 0) AS avg_rating,
-    COUNT(DISTINCT afollower.follower_user_id) AS followers_count,
+    COUNT(DISTINCT af_followers.follower_user_id) AS followers_count,
     u.description AS artist_description,
     u.profile_photo_url AS artist_profile_photo,
     COUNT(DISTINCT com.comment_id) AS total_comments,
@@ -32,7 +33,7 @@ class ArtPreview {
         ELSE 0 
     END AS is_liked,
     CASE 
-        WHEN afollower.followed_artist_user_id IS NOT NULL THEN 1 
+        WHEN afollower.follower_user_id IS NOT NULL THEN 1 
         ELSE 0 
     END AS is_following,
     CASE 
@@ -60,19 +61,21 @@ LEFT JOIN
 LEFT JOIN 
     artist_rating ar ON u.user_id = ar.rated_user_id
 LEFT JOIN 
-    artist_follower afollower ON u.user_id = afollower.followed_artist_user_id AND afollower.follower_user_id = ?
-LEFT JOIN
+    artist_follower af_followers ON u.user_id = af_followers.followed_artist_user_id
+LEFT JOIN 
     comment com ON a.artwork_id = com.artwork_id
-LEFT JOIN
+LEFT JOIN 
     artwork_like a_like ON a.artwork_id = a_like.artwork_id AND a_like.user_id = ?
-LEFT JOIN
+LEFT JOIN 
     gallery g ON a.artwork_id = g.artwork_id AND g.customer_user_id = ?
-LEFT JOIN
+LEFT JOIN 
     user cust ON cust.user_id = ?
+LEFT JOIN 
+    artist_follower afollower ON u.user_id = afollower.followed_artist_user_id AND afollower.follower_user_id = ?
 WHERE 
     a.artwork_id = ?
 GROUP BY 
-    a.artwork_id;
+    a.artwork_id, a.title, u.fName, u.LName, u.profession, u.firebase_uid, u.location, u.user_id, c.name, c.category_id, a.price, a.published_date, al.total_likes, a.description, a.original_url, a.modelBackground, a.thumbnail_url, u.description, u.profile_photo_url, cust.profile_photo_url, a_like.user_id, afollower.follower_user_id, g.artwork_id;
 
     `,
       [userId, userId, userId, userId, artId]
