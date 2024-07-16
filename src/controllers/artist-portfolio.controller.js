@@ -2,7 +2,8 @@ const db = require("../utils/database");
 const artistUploadArtworks=require('../services/artist-upload-artwork.service');
 
 class ArtistPortfolio {
-  static fetchArtistDetails(artistId) {
+  static fetchArtistDetails(artistId, customerId) {
+    console.log('artistId:', artistId, 'customerId:', customerId);
     return db.execute(
       `SELECT
         u.username AS artist_name,
@@ -39,7 +40,7 @@ class ArtistPortfolio {
         u.user_id = ?
       GROUP BY
         u.user_id;`,
-      [artistId, artistId]
+      [customerId, artistId]
     );
   }
   
@@ -74,14 +75,26 @@ class ArtistPortfolio {
       [customerId, artistId]
     );
   }
+
+  static getSocial(artistId) {
+    return db.execute(
+      'call GetSocialAccounts(?)',[artistId]
+    );
+  }
 }
 
 exports.getArtistDetails = async (req, res, next) => {
   const artistId = req.params.artistId;
-  const customerId = req.body.userId;
+  const customerId = req.params.customerId;
+  console.log('artistId:', artistId, 'customerId:', customerId);
   try {
-    const artistDetails = await ArtistPortfolio.fetchArtistDetails(artistId);
-    res.status(200).json(artistDetails[0]);
+    const artistDetails = await ArtistPortfolio.fetchArtistDetails(artistId, customerId);
+    const social = await ArtistPortfolio.getSocial(artistId);
+    const response = {
+      artistDetails:artistDetails[0],
+      social: social[0][0]
+    };
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching artist details:", error);
     next(error);
