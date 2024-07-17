@@ -277,7 +277,7 @@ exports.changePassword = async (req, res) => {
       }
 
       const validPassword = await bcrypt.compare(oldPassword, user[0][0].password_hash);
-//   console.log(validPassword)
+       console.log('tyyyyyyyyy',validPassword)
       if (!validPassword) {
           return res.status(400).json({ message: "Invalid old password" });
       }
@@ -285,12 +285,12 @@ exports.changePassword = async (req, res) => {
       if (!schema.validate(newPassword)) {
           return res.status(400).json({ message: "Password must at least contain 8 characters, uppercase letters, lowercase letters, digits, and special characters!" });
       }
-      if (ne !== confirmPassword) {
+      if (newPassword !== confirmPassword) {
         return res.status(400).json({ success: false, msg: "Passwords do not match" });
       }
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-   //   console.log(hashedNewPassword)
+       console.log('hyhuhiuhiu',hashedNewPassword)
 
       await userService.updateUserPassword(hashedNewPassword, email);
       return res.status(200).json({ message: "Password changed successfully" });
