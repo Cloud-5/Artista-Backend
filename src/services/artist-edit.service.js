@@ -2,9 +2,6 @@ const db = require('../utils/database');
 
 class artistEdit {
 
-
-    
-
   static getArtistDetails(userId) {
     return db.execute('SELECT * FROM user WHERE user_id = ?', [userId]);
   }
@@ -15,9 +12,20 @@ class artistEdit {
     return db.execute('SELECT * FROM social_media_platforms');
   }
 
+
+
+  static updateArtworkAvailability(artworkId) {
+    const query = `
+      UPDATE artwork
+      SET availability = 0
+      WHERE artwork_id = ?
+    `;
+    return db.execute(query, [artworkId]);
+  }
  
 
-  static updateArtist( user_id , fName, lName, location, description, profile_photo_url, profession ) {
+  static updateArtist(artistId,fName, LName, location, description, profile_photo_url,banner_img_url, profession ) {
+    console.log('dta in query',artistId,fName, LName, location, description, profile_photo_url,banner_img_url, profession)
     const query = `
       UPDATE user SET
         fName = ?,
@@ -25,10 +33,11 @@ class artistEdit {
         location = ?,
         description = ?,
         profile_photo_url = ?,
+        banner_img_url = ?,
         profession = ?
         WHERE user_id = ?
     `;
-    return db.execute(query, [fName, lName, location, description, profile_photo_url, profession, user_id]);
+    return db.execute(query, [fName, LName, location, description, profile_photo_url,banner_img_url, profession, artistId]);
    
    
   }

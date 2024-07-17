@@ -32,15 +32,28 @@ exports.getArtistDetails = async (req, res, next) => {
   }
 };
 
+exports.getSocialAccounts =async(req,res,next)=>{
+  const artistId=req.params.artistId;
+  console.log(artistId,'fffffff')
+  try{
+      const socialAccounts=await artistedit.getSocialAccounts(artistId);
+      return res.status(200).json(socialAccounts[0]);
+  }
+  catch(error){
+    res.status(500).json({error :'fail to get Social media platfoms for artist'});
+    
+  }
+}
 
 
   exports.updateArtist = async (req, res) => {
     try {
       const artistId = req.params.artistId;
       console.log('Artist ID:', artistId)
-      const { fName, LName, location, description, profile_photo_url, profession } = req.body;
+      const { fName, LName, location, description, profile_photo_url,banner_img_url, profession } = req.body;
       console.log('body,', req.body)
-      const updateArtistDetails = await artistedit.updateArtist(artistId, fName, LName, location, description, profile_photo_url, profession);
+      const result = await artistedit.updateArtist(artistId,fName, LName, location, description, profile_photo_url,banner_img_url, profession);
+      console.log(result,'service results');
       res.status(200).json({ message: 'Artist profile updated successfully.' });
     } catch (error) {
       res.status(500).json({ error: 'Failed to update artist profile.' });
@@ -61,10 +74,6 @@ exports.getArtistDetails = async (req, res, next) => {
         res.status(500).json({ error: 'Failed to update social media link.' });
       });
   }
-  
-
-
-
 
 
 
@@ -80,30 +89,17 @@ console.log('Artists details get succesfully:',artists);
 };
 
 
+exports.updateArtworkAvailability = async (req, res) => {
+  const artworkId = req.params.artworkId;
+ 
 
-
-
-
-// exports.deleteAccount = async (req, res, next) => {
-//   const userId = req.params.userId;
-
-//   try {
-//     await artistedit.deleteArtist(userId);
-//     res.status(200).json({ message: "Account deleted successfully!" });
-//   } catch (error) {
-//     console.error("Error deleting account:", error);
-//     next(error);
-//   }
-// };
-
-
-// exports.getFollowers = async (req, res, next) => {
-//   const userId = req.params.userId;
-//   try {
-//     const followers = await artistedit.getFollowers(userId);
-//     res.status(200).json(followers[0]);
-//   } catch (error) {
-//     console.error("Error getting followers:", error);
-//     next(error);
-//   }
-// };
+  try {
+    const result = await artistedit.updateArtworkAvailability(artworkId);
+    if (result[0].affectedRows === 0) {
+      return res.status(404).json({ message: 'Artwork not found' });
+    }
+    res.status(200).json({ message: 'Artwork availability updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update artwork availability.' });
+  }
+};
