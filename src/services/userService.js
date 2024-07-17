@@ -7,37 +7,76 @@ exports.checkExistingEmail = (email) => {
     return db.execute(sql, [email]);
 };
 
+// exports.createUser = async (user) => {
+//   //console.log("Create user hit!!");
+//   let status = user.role === 'artist' ? 0 : 1;
+
+
+// const userSql1 = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+//   const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid,profession,description) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+//   const platformSql = "INSERT INTO social_accounts(user_id, platform_id, account_url) VALUES ?";
+
+//  // console.log("Query hit!!");
+//   // console.log('User details:', {
+//   //   username: user.username,
+//   //   email: user.email,
+//   //   password: user.password,
+//   //   fName: user.fName,
+//   //   lName: user.lName,
+//   //   dob: user.dob,
+//   //   location: user.location,
+//   //   role: user.role,
+//   //   status,
+//   //   firebase_uid: user.firebase_uid
+//   // });
+
+//   try {
+//     // Insert user details
+//     const userResult = await db.execute(userSql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid,user.profession,user.description]);
+//     console.log("User created successfully:", userResult);
+
+//     // If the user is an artist, insert their platform URLs
+//     if (user.role === 'artist' && user.platforms && user.platforms.length > 0) {
+//       const platformValues = user.platforms.map(platform => [user.user_id, platform.id, platform.url]);
+//       const platformResult = await db.query(platformSql, [platformValues]);
+//       console.log("User platforms created successfully:", platformResult);
+//     }
+
+//     return userResult;
+//   } catch (error) {
+//     console.error("Error creating user:", error);
+//     throw error; // Re-throw the error to be handled by the caller
+//   }
+// };
+
 exports.createUser = async (user) => {
   //console.log("Create user hit!!");
   let status = user.role === 'artist' ? 0 : 1;
 
-  const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const userSql1 = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+  const userSql = "INSERT INTO user(user_id,username, email, password_hash, fName, LName, dob, location, role, registered_at, is_approved, firebase_uid,profession,description) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   const platformSql = "INSERT INTO social_accounts(user_id, platform_id, account_url) VALUES ?";
 
- // console.log("Query hit!!");
-  // console.log('User details:', {
-  //   username: user.username,
-  //   email: user.email,
-  //   password: user.password,
-  //   fName: user.fName,
-  //   lName: user.lName,
-  //   dob: user.dob,
-  //   location: user.location,
-  //   role: user.role,
-  //   status,
-  //   firebase_uid: user.firebase_uid
-  // });
-
   try {
-    // Insert user details
-    const userResult = await db.execute(userSql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid]);
-    console.log("User created successfully:", userResult);
+    let userResult;
 
-    // If the user is an artist, insert their platform URLs
-    if (user.role === 'artist' && user.platforms && user.platforms.length > 0) {
-      const platformValues = user.platforms.map(platform => [user.user_id, platform.id, platform.url]);
-      const platformResult = await db.query(platformSql, [platformValues]);
-      console.log("User platforms created successfully:", platformResult);
+    // If the user is a customer, insert using userSql1
+    if (user.role === 'customer') {
+      console.log("User details:", user);
+      userResult = await db.execute(userSql1, [user.user_id, user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid]);
+      console.log("Customer created successfully:", userResult);
+
+    // If the user is an artist, insert using userSql and platformSql
+    } else if (user.role === 'artist') {
+      console.log("User details:", user);
+      userResult = await db.execute(userSql, [user.user_id,user.fName, user.email, user.password, user.fName, user.lName, user.dob, user.location, user.role, user.registered_at, status, user.firebase_uid, user.profession, user.description]);
+      console.log("Artist created successfully:", userResult);
+
+      if (user.platforms && user.platforms.length > 0) {
+        const platformValues = user.platforms.map(platform => [user.user_id, platform.id, platform.url]);
+        const platformResult = await db.query(platformSql, [platformValues]);
+        console.log("Artist platforms created successfully:", platformResult);
+      }
     }
 
     return userResult;

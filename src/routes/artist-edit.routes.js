@@ -13,4 +13,6 @@ router.put('/:artistId',artistEdit.updateArtist);
 router.put('/social-media', artistEdit.updateSocialMediaLink);
 // router.get('/:userId', artistEdit.getFollowers);
 router.get('/social-media-platforms',artistEdit.getSocialMediaPlatforms);
+router.get('/social-accounts/:artistId',artistEdit.getSocialAccounts);
+router.put('/artwork-availability/:artworkId', artistEdit.updateArtworkAvailability);
 module.exports= router;
