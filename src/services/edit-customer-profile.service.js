@@ -8,8 +8,6 @@ class EditCustomerProfile {
     firstName,
     lastName,
     description,
-    email,
-    newPassword,
     location,
     phone
   ) {
@@ -23,14 +21,12 @@ class EditCustomerProfile {
                 fName = ?,
                 LName = ?,
                 description = ?,
-                email = ?,
-                password_hash = ?,
                 location = ?
                 phone = ?
             WHERE 
                 user_id = ?
             `,
-      [banner_img_url,profile_photo_url,firstName, lastName, description, email, newPassword, location,phone, userId]
+      [banner_img_url,profile_photo_url,firstName, lastName, description, location,phone, userId]
     );
   }
 
