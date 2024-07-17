@@ -5,7 +5,7 @@ exports.getArtistData = async (req, res, next) => {
     try {
         const artistData = await ArtistNewHome.getArtistData(artistId);
         const socialAccounts= await ArtistNewHome.getSocialAccounts(artistId);
-        const rank =  await ArtistNewHome.getArtistRank(artistId);
+        const rank =  await ArtistNewHome.getArtistRank(artistId);      
         const responseData= { 
             artistData: artistData[0][0],
             socialAccounts: socialAccounts[0],
@@ -20,3 +20,4 @@ exports.getArtistData = async (req, res, next) => {
         next(error);
     }
 }
+
