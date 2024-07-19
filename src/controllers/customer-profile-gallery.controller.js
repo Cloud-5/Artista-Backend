@@ -15,7 +15,8 @@ class CustomerProfileGallery {
         u.description,
         u.profile_photo_url,
         u.banner_img_url,
-        u.email
+        u.email,
+        u.phone
     FROM
         user u
     LEFT JOIN

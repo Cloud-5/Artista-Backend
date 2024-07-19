@@ -21,7 +21,7 @@ class EditCustomerProfile {
                 fName = ?,
                 LName = ?,
                 description = ?,
-                location = ?
+                location = ?,
                 phone = ?
             WHERE 
                 user_id = ?
