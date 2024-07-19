@@ -14,7 +14,6 @@ exports.getArtistData = async (req, res, next) => {
         }
 
         res.status(200).json(responseData);
-        console.log('Artist data:', responseData);
     } catch (error) {
         console.error('Error fetching artist data:', error);
         next(error);
