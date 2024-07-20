@@ -20,7 +20,7 @@ module.exports = class Artwork {
   }
 
   static async getArtworkByArtistId(artistId) {
-    return db.execute(`SELECT * FROM artwork WHERE artist_id = ?`,[artistId]);
+    return db.execute(`SELECT * FROM artwork WHERE artist_id = ? AND availability = 1`,[artistId]);
   }
 
   static async getLikesForArtwork(artworkId) {
