@@ -85,7 +85,7 @@ static async likeArtwork(userId, artworkId) {
 
 static async getTotalLikes(artworkId) {
   const [totalLikesRows] = await db.execute('SELECT COUNT(*) AS total_likes FROM artwork_like WHERE artwork_id = ?', [artworkId]);
-  return totalLikesRows[0].total_likes || 0;
+  return totalLikesRows[0].total_likes;
 }
 
 static async getLikedStatus(userId, artworkId) {
