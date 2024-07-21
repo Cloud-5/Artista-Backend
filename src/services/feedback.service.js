@@ -9,7 +9,12 @@ module.exports = class Feedback {
         return db.execute(`SELECT * FROM artist_feedback WHERE artist_user_id = ?`, [artistId]);
     }
 
-   
+    static async updateIsLiked(feedbackId, isLiked) {
+        return db.execute(
+          'UPDATE feedback SET isLiked = ? WHERE feedback_id = ?',
+          [isLiked, feedbackId]
+        );
+      }
+    }
+    
 
-
-}

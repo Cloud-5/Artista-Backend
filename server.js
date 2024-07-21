@@ -42,6 +42,7 @@ const artistNewHomeRouter=require('./src/routes/artist-new-home.routes');
 const artistUploadArtworks=require('./src/routes/artist-upload-artwork.routes');
 const creation = require('./src/routes/creation.routes');
 const helpCenter = require('./src/routes/help-center.routes');
+const editArtwork = require('./src/routes/edit-artwork.routes');
 
 
 
@@ -111,6 +112,7 @@ app.use('/artist-upload-artworks', artistUploadArtworks);
 app.use('/notifications',  notificationRoutes);
 app.use('/creation', creation);
 app.use('/help-center',helpCenter)
+app.use('/edit-artwork',editArtwork);
 
 
 app.post('/upload', (req, res) => {

@@ -20,3 +20,18 @@ exports.getArtistData = async (req, res, next) => {
     }
 }
 
+exports.getAvailableArtworkCount = async (req, res, next) => {
+    const artistId = req.params.artistId;
+
+    try {
+        const [rows] = await ArtistNewHome.getAvailableArtworkCount(artistId);
+        const availableArtworks = rows[0].available_artworks;
+        res.status(200).json({ availableArtworks });
+    } catch (error) {
+        console.error('Error fetching available artworks count:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+

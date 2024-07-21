@@ -1,8 +1,8 @@
 const db = require("../utils/database");
 
 class notificationServices {
-  static getAllNotifications = async () => {
-    const data = await db.query("SELECT * FROM notifications");
+  static getAllNotifications = async (userId) => {
+    const data = await db.query("SELECT * FROM notifications where receiver_id = ?", [userId]);
     return data[0];
   };
 
@@ -22,27 +22,23 @@ class notificationServices {
   };
 
   static createNotification = async (notification) => {
+    console.log("notification in service", notification);
     const sql =
-      "INSERT INTO notifications (notification_source, sender_id, receiver_id, title, body, image, isViewed) VALUES (?,?,?,?,?,?,?)";
+      "INSERT INTO notifications (notification_source, sender_id, receiver_id, title, body, isViewed, created_at) VALUES (?,?,?,?,?,?,NOW())";
     return db.execute(sql, [
       notification.source,
       notification.sender_id,
       notification.receiver_id,
       notification.title,
       notification.body,
-      notification.image,
       notification.isViewed,
     ]);
   };
 
-  static updateNotification = async (notificationId, notification) => {
+  static updateNotification = async (notificationId) => {
     const sql =
-      "UPDATE notifications SET title=?, body=?, image=?, isViewed=? WHERE notification_id=?";
+      "UPDATE notifications SET isViewed=0 WHERE notification_id=?";
     return db.execute(sql, [
-      notification.title,
-      notification.body,
-      notification.image,
-      notification.isViewed,
       notificationId,
     ]);
   };
@@ -51,6 +47,16 @@ class notificationServices {
     const sql = "DELETE FROM notifications WHERE notification_id=?";
     return db.execute(sql, [notificationId]);
   };
+
+  static readAll = async (userId) => {
+    const sql = "UPDATE notifications SET isViewed=0 WHERE receiver_id=?";
+    return db.execute(sql, [userId]);
+  };
+
+  static deleteAll = async (userId) => {
+    const sql = "DELETE FROM notifications WHERE receiver_id=?";
+    return db.execute(sql, [userId]);
+  }
 }
 
 module.exports = notificationServices;

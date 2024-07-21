@@ -15,7 +15,15 @@ class artistNewHome{
 
 
 
-
+      static getAvailableArtworkCount(artistId) {
+        const query = `
+          SELECT COUNT(*) AS available_artworks
+          FROM artwork
+          WHERE artist_id = ?
+          AND availability = 1;
+        `;
+        return db.execute(query, [artistId]);
+      }
 
 
 
