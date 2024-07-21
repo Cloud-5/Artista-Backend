@@ -20,8 +20,38 @@ module.exports = class Artwork {
   }
 
   static async getArtworkByArtistId(artistId) {
-    return db.execute(`SELECT * FROM artwork WHERE artist_id = ? AND availability = 1`,[artistId]);
+    return db.execute(`SELECT 
+    a.*, 
+    COUNT(al.artwork_id) AS like_count
+  FROM 
+    artwork a
+  LEFT JOIN 
+    artwork_like al ON a.artwork_id = al.artwork_id
+  WHERE 
+    a.artist_id = ? AND 
+    a.availability = 1
+  GROUP BY 
+    a.artwork_id;`,[artistId]);
   }
+
+  static async getPurchasedCount(artworkId) {
+    return db.execute(
+      `SELECT 
+    a.artwork_id,
+    a.title,
+    COALESCE(SUM(ci.quantity), 0) AS purchase_count
+FROM 
+    artwork a
+LEFT JOIN 
+    cart_item ci ON a.artwork_id = ci.artwork_id
+WHERE 
+    a.artwork_id = ?
+GROUP BY 
+    a.artwork_id, a.title;`,[artworkId]
+    )
+  }
+
+
 
   static async getLikesForArtwork(artworkId) {
     return db.execute(`SELECT COUNT(user_id) as count FROM artwork_like WHERE artwork_id = ?`,[artworkId]);
