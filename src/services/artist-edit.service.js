@@ -35,13 +35,18 @@ class artistEdit {
     return db.execute('CALL GetFollowers(?)', [userId]);
   }
 
-
   static updateSocialMediaLink(user_id, platform_id, account_url) {
-    const query = `UPDATE social_accounts
-      SET account_url = ?
-      WHERE user_id = ? AND platform_id = ?;`;          
+    const query = `UPDATE social_accounts SET account_url = ? WHERE user_id = ? AND platform_id = ?;`;
     return db.execute(query, [account_url, user_id, platform_id]);
   }
+
+
+  // static updateSocialMediaLink(user_id, platform_id, account_url) {
+  //   const query = `UPDATE social_accounts
+  //     SET account_url = ?
+  //     WHERE user_id = ? AND platform_id = ?;`;          
+  //   return db.execute(query, [account_url, user_id, platform_id]);
+  // }
 }
 
 module.exports = artistEdit;

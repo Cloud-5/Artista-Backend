@@ -10,7 +10,7 @@ router.put('/:artistId',artistEdit.updateArtist);
 
 
 // router.post('/:artistId/social-media', artistEdit.addSocialMediaLink);
-router.put('/social-media', artistEdit.updateSocialMediaLink);
+router.put('/social-media/:artistId', artistEdit.updateSocialMediaLink);
 // router.get('/:userId', artistEdit.getFollowers);
 router.get('/social-media-platforms',artistEdit.getSocialMediaPlatforms);
 router.get('/social-accounts/:artistId',artistEdit.getSocialAccounts);

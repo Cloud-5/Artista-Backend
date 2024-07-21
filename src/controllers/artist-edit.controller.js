@@ -61,20 +61,19 @@ exports.getSocialAccounts =async(req,res,next)=>{
   };
 
 
-  exports.updateSocialMediaLink =async(req,res)=>{
+  exports.updateSocialMediaLink = async (req, res) => {
     const artistId = req.params.artistId;
-    console.log('Artist ID:', artistId)
     const { platform_id, account_url } = req.body;
-    console.log('body,', req.body)
-    await  artistedit.updateSocialMediaLink(artistId, platform_id, account_url)
-      .then(result => {
-        res.json({ message: 'Social media link updated successfully.' });
-      })
-      .catch(error => {
-        res.status(500).json({ error: 'Failed to update social media link.' });
-      });
-  }
-
+  
+    try {
+      const result = await artistedit.updateSocialMediaLink(artistId, platform_id, account_url);
+      res.json({ message: 'Social media link updated successfully.' });
+    } catch (error) {
+      console.error('Update error:', error);
+      res.status(500).json({ error: 'Failed to update social media link.' });
+    }
+  };
+  
 
 
 exports.getAllArtistData = async (req, res, next) => {
