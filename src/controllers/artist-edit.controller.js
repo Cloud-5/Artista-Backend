@@ -90,9 +90,8 @@ console.log('Artists details get succesfully:',artists);
 
 
 exports.updateArtworkAvailability = async (req, res) => {
-  const artworkId = req.params.artworkId;
- 
-
+  const artworkId = req.body.artId;
+  console.log('this is  artwork id from controller',artworkId);
   try {
     const result = await artistedit.updateArtworkAvailability(artworkId);
     if (result[0].affectedRows === 0) {

@@ -11,17 +11,6 @@ class artistEdit {
   static getSocialMeduaPlatforms() {
     return db.execute('SELECT * FROM social_media_platforms');
   }
-
-
-
-  static updateArtworkAvailability(artworkId) {
-    const query = `
-      UPDATE artwork
-      SET availability = 0
-      WHERE artwork_id = ?
-    `;
-    return db.execute(query, [artworkId]);
-  }
  
 
   static updateArtist(artistId,fName, LName, location, description, profile_photo_url,banner_img_url, profession ) {

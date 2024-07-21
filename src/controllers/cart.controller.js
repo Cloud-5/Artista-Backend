@@ -165,6 +165,7 @@ exports.createPurchase = async (req, res, next) => {
             res.status(500).json({ message: 'Purchase created, but failed to send verification email to customer' });
         } else {
             res.status(201).json({ message: 'Purchase created successfully', purchase_id });
+            
         }
     } catch (error) {
         console.error('Error creating purchase: ', error);
