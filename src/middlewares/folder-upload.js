@@ -31,7 +31,6 @@ const upload = multer({
   
 const uploadFiles = upload.array('files');
 const getGltfFile = (files) => {
-  console.log('files in getGltf', files);
   return files.find(file => file.originalname.endsWith('.gltf'));
 };
 
