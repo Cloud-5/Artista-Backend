@@ -86,7 +86,6 @@ class ArtistPortfolio {
 exports.getArtistDetails = async (req, res, next) => {
   const artistId = req.params.artistId;
   const customerId = req.params.customerId;
-  console.log('artistId:', artistId, 'customerId:', customerId);
   try {
     const artistDetails = await ArtistPortfolio.fetchArtistDetails(artistId, customerId);
     const social = await ArtistPortfolio.getSocial(artistId);
