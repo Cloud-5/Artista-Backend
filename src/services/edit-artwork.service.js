@@ -8,7 +8,12 @@ class editArtwork{
             [artwork_id]
         )
     }
-
+    static getArtworkIs3D(artwork_id) {
+        return db.execute(
+            `SELECT is3D FROM artwork WHERE artwork_id = ?`,
+            [artwork_id]
+        );
+    }
     static update2d(artwork_id, title, price, thumbnail_url, description, category_id, is3D){
         return db.execute(
             `UPDATE artwork SET title = ?, price = ?, thumbnail_url = ?, description = ?, category_id = ?, is3D = ? WHERE artwork_id = ?`,
@@ -102,5 +107,6 @@ class editFormts{
         return db.execute('INSERT INTO artwork_file_format (artwork_id, file_format_name) VALUES (?, ?)', [artworkId, file_format_name]);
       }
 }
+
 
 module.exports = { editArtwork, edittools, editTags, editFormts };

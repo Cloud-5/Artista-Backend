@@ -112,13 +112,13 @@ app.use('/artist-upload-artworks', artistUploadArtworks);
 app.use('/notifications',  notificationRoutes);
 app.use('/creation', creation);
 app.use('/help-center',helpCenter)
-app.use('/edit-artwork',editArtwork);
+  app.use('/edit-artwork',editArtwork);
 
 
 app.post('/upload', (req, res) => {
     upload(req, res, (err) => {
       if (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });        
       }
       console.log('req.file', req.file);
       console.log('req.headers', req.headers);
