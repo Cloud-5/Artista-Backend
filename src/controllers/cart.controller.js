@@ -12,7 +12,7 @@ class cart {
 
     static post(user_id, phoneNumber, location, paymentMethod){
         console.log('details',user_id, phoneNumber, location, paymentMethod  )
-        return db.execute('INSERT INTO purchase_history (user_id, pNumber, location,  paymentMethod) VALUES (?, ?, ?, ?)', [user_id, phoneNumber, location,  paymentMethod])
+        return db.execute('INSERT INTO purchase_history (user_id, pNumber, location,  paymentMethod, purchase_datetime) VALUES (?, ?, ?, ?, NOW())', [user_id, phoneNumber, location,  paymentMethod])
         .then(([result])=>{
             return {purchase_id: result.insertId};
         })
@@ -165,6 +165,7 @@ exports.createPurchase = async (req, res, next) => {
             res.status(500).json({ message: 'Purchase created, but failed to send verification email to customer' });
         } else {
             res.status(201).json({ message: 'Purchase created successfully', purchase_id });
+            
         }
     } catch (error) {
         console.error('Error creating purchase: ', error);

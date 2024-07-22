@@ -5,7 +5,7 @@ exports.getArtistData = async (req, res, next) => {
     try {
         const artistData = await ArtistNewHome.getArtistData(artistId);
         const socialAccounts= await ArtistNewHome.getSocialAccounts(artistId);
-        const rank =  await ArtistNewHome.getArtistRank(artistId);
+        const rank =  await ArtistNewHome.getArtistRank(artistId);      
         const responseData= { 
             artistData: artistData[0][0],
             socialAccounts: socialAccounts[0],
@@ -14,9 +14,24 @@ exports.getArtistData = async (req, res, next) => {
         }
 
         res.status(200).json(responseData);
-        console.log('Artist data:', responseData);
     } catch (error) {
         console.error('Error fetching artist data:', error);
         next(error);
     }
 }
+
+exports.getAvailableArtworkCount = async (req, res, next) => {
+    const artistId = req.params.artistId;
+
+    try {
+        const [rows] = await ArtistNewHome.getAvailableArtworkCount(artistId);
+        const availableArtworks = rows[0].available_artworks;
+        res.status(200).json({ availableArtworks });
+    } catch (error) {
+        console.error('Error fetching available artworks count:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+

@@ -13,8 +13,6 @@ const s3 = new aws.S3();
 
 const fileFilter = (req, file, cb) => {
   const uploadType = req.headers.uploadtype;
-  console.log('req.headers', req.headers);
-  console.log('uploadType', uploadType);
 
   let allowedMimeTypes = [];
 
@@ -41,7 +39,6 @@ const upload = multer({
     bucket: process.env.AWS_BUCKET_NAME,
     key: function (req, file, cb) {
       const folder = req.headers.folder;
-      console.log('folder', folder);
       const uniqueName = Date.now() + '-' + file.originalname;
       const key = `${folder}/${uniqueName}`;
       req.file = key;

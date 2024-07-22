@@ -1,14 +1,40 @@
 const Artwork = require("../services/artwork.service")
 
+// exports.getArtworksForArtist = async (req, res, next) => {
+//     const { id }= req.params;
+//     try {
+//         const artworkData = await Artwork.getArtworkByArtistId(id);
+//         res.status(200).json(artworkData[0]);
+//     } catch (error) {
+//         console.error("Error getting artworks:", error);
+//     }
+// }
+
 exports.getArtworksForArtist = async (req, res, next) => {
-    const { id }= req.params;
+    const { id } = req.params;
     try {
-        const artworkData = await Artwork.getArtworkByArtistId(id);
-        res.status(200).json(artworkData[0]);
+      const [artworkData] = await Artwork.getArtworkByArtistId(id);
+  
+      // Fetch the purchase count for each artwork and add it to the artwork data
+      const artworkDataWithPurchaseCounts = await Promise.all(
+        artworkData.map(async (artwork) => {
+          const [purchaseCountData] = await Artwork.getPurchasedCount(artwork.artwork_id);
+          return {
+            ...artwork,
+            purchase_count: purchaseCountData[0].purchase_count,
+          };
+        })
+      );
+
+      console.log(artworkDataWithPurchaseCounts);
+  
+      res.status(200).json(artworkDataWithPurchaseCounts);
     } catch (error) {
-        console.error("Error getting artworks:", error);
+      console.error("Error getting artworks:", error);
+      res.status(500).json({ message: "Error getting artworks" });
     }
-}
+  };
+  
 
 exports.getLikesForArtwork = async (req, res, next) => {
     const { id } = req.params;
